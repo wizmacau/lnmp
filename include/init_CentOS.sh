@@ -58,7 +58,7 @@ sed -i 's/^id:.*$/id:3:initdefault:/' /etc/inittab
 init q
 
 # PS1
-[ -z "`cat ~/.bashrc | grep ^PS1`" ] && echo 'PS1="\[\e[37;40m\][\[\e[32;40m\]\u\[\e[37;40m\]@\h \[\e[35;40m\]\W\[\e[0m\]]\\$ "' >> ~/.bashrc 
+[ -z "`cat /etc/bashrc | grep ^PS1`" ] && echo 'PS1="\[\e[37;40m\][\[\e[32;40m\]\u\[\e[37;40m\]@\h \[\e[35;40m\]\W\[\e[0m\]]\\$ "' >> /etc/bashrc 
 
 # history size 
 sed -i 's/^HISTSIZE=.*$/HISTSIZE=100/' /etc/profile
