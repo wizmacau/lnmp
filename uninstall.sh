@@ -36,17 +36,17 @@ Uninstall()
 [ -e "$nginx_install_dir" ] && service nginx stop && rm -rf /etc/init.d/nginx /etc/logrotate.d/nginx
 [ -e "$tengine_install_dir" ] && service nginx stop && rm -rf /etc/init.d/nginx /etc/logrotate.d/nginx
 [ -e "$pureftpd_install_dir" ] && service pureftpd stop && rm -rf /etc/init.d/pureftpd
-[ -e "$redis_install_dir" ] && service redis-server stop && rm -rf /etc/init.d/redis-server
-[ -e "$memcached_install_dir" ] && service memcached stop && rm -rf /etc/init.d/memcached
+[ -e "$redis_install_dir" ] && service redis-server stop && rm -rf /etc/init.d/redis-server /usr/local/bin/redis-*
+[ -e "$memcached_install_dir" ] && service memcached stop && rm -rf /etc/init.d/memcached /usr/bin/memcached
 [ -e "/usr/local/imagemagick" ] && rm -rf /usr/local/imagemagick 
 [ -e "/usr/local/graphicsmagick" ] && rm -rf /usr/local/graphicsmagick 
 [ -e "/etc/init.d/supervisord" ] && service supervisord stop && { rm -rf /etc/supervisord.conf /etc/init.d/supervisord; } 
-[ -e "/usr/bin/hhvm" ] && { rpm -e hhvm ; rm -rf /etc/hhvm /var/log/hhvm; }
+[ -e "/usr/bin/hhvm" ] && { rpm -e hhvm ; rm -rf /etc/hhvm /var/log/hhvm /usr/bin/hhvm; }
 id -u $run_user >/dev/null 2>&1 ; [ $? -eq 0 ] && userdel $run_user
 id -u mysql >/dev/null 2>&1 ; [ $? -eq 0 ] && userdel mysql 
 
-/bin/mv ${wwwroot_dir}{,_$(date +%F)}
-/bin/mv ${db_data_dir}{,_$(date +%F)}
+[ -e "$wwwroot_dir" ] && /bin/mv ${wwwroot_dir}{,$(date +%Y%m%d%H)}
+[ -e "$db_data_dir" ] && /bin/mv ${db_data_dir}{,$(date +%Y%m%d%H)}
 for D in `cat ./options.conf | grep dir= | grep -v oneinstack | grep -v backup_dir | awk -F'=' '{print $2}' | sort | uniq`
 do
     [ -e "$D" ] && rm -rf $D
@@ -77,7 +77,7 @@ done
 [ -e "$db_install_dir" ] && echo -e "/etc/init.d/mysqld\n/etc/my.cnf"
 [ -e "$php_install_dir/bin/phpize" ] && echo '/etc/init.d/php-fpm'
 [ -e "$pureftpd_install_dir" ] && echo '/etc/init.d/pureftpd'
-[ -e "$memcached_install_dir" ] && echo '/etc/init.d/memcached' 
+[ -e "$memcached_install_dir" ] && echo -e "/etc/init.d/memcached\n/usr/bin/memcached"
 [ -e "$redis_install_dir" ] && echo '/etc/init.d/redis-server' 
 [ -e "/usr/local/imagemagick" ] && echo '/usr/local/imagemagick' 
 [ -e "/usr/local/graphicsmagick" ] && echo '/usr/local/graphicsmagick' 
@@ -89,7 +89,7 @@ while :
 do
     echo
     read -p "Do you want to uninstall OneinStack? [y/n]: " uninstall_yn
-    if [ "$uninstall_yn" != 'y' -a "$uninstall_yn" != 'n' ];then
+    if [[ ! $uninstall_yn =~ ^[y,n]$ ]];then
         echo "${CWARNING}input error! Please only input 'y' or 'n'${CEND}"
     else
         break

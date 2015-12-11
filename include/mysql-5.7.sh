@@ -12,29 +12,36 @@ Install_MySQL-5-7()
 {
 cd $oneinstack_dir/src
 
-[ "$IPADDR_STATE"x == "CN"x ] && { DOWN_ADDR_MYSQL=http://linuxeye.file.alimmdn.com/oneinstack/src; DOWN_ADDR_BOOST=$DOWN_ADDR_MYSQL; } || { DOWN_ADDR_MYSQL=http://cdn.mysql.com/Downloads/MySQL-5.7; DOWN_ADDR_BOOST=http://downloads.sourceforge.net/project/boost/boost/1.59.0; }
+[ "$IPADDR_STATE"x == "CN"x ] && { DOWN_ADDR_MYSQL=http://mirrors.linuxeye.com/oneinstack/src; DOWN_ADDR_BOOST=$DOWN_ADDR_MYSQL; } || { DOWN_ADDR_MYSQL=http://cdn.mysql.com/Downloads/MySQL-5.7; DOWN_ADDR_BOOST=http://downloads.sourceforge.net/project/boost/boost/1.59.0; }
 
-src_url=$DOWN_ADDR_BOOST/boost_1_59_0.tar.gz && Download_src
-src_url=$DOWN_ADDR_MYSQL/mysql-$mysql_7_version.tar.gz && Download_src
+if [ ! -e "/usr/local/lib/libboost_system.so" ];then
+    src_url=$DOWN_ADDR_BOOST/boost_1_59_0.tar.gz && Download_src
+    tar xzf boost_1_59_0.tar.gz
+    cd boost_1_59_0
+    ./bootstrap.sh
+    ./bjam --prefix=/usr/local
+    ./b2 install
+    cd ..
+fi
+echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+ldconfig
 
-id -u mysql >/dev/null 2>&1
-[ $? -ne 0 ] && useradd -M -s /sbin/nologin mysql
-
-mkdir -p $mysql_data_dir;chown mysql.mysql -R $mysql_data_dir
-tar xzf boost_1_59_0.tar.gz
-tar zxf mysql-$mysql_7_version.tar.gz
-cd mysql-$mysql_7_version
 if [ "$je_tc_malloc" == '1' ];then
     EXE_LINKER="-DCMAKE_EXE_LINKER_FLAGS='-ljemalloc'"
 elif [ "$je_tc_malloc" == '2' ];then
     EXE_LINKER="-DCMAKE_EXE_LINKER_FLAGS='-ltcmalloc'"
 fi
-make clean
+
+src_url=$DOWN_ADDR_MYSQL/mysql-$mysql_5_7_version.tar.gz && Download_src
+id -u mysql >/dev/null 2>&1
+[ $? -ne 0 ] && useradd -M -s /sbin/nologin mysql
 [ ! -d "$mysql_install_dir" ] && mkdir -p $mysql_install_dir 
+mkdir -p $mysql_data_dir;chown mysql.mysql -R $mysql_data_dir
+tar zxf mysql-$mysql_5_7_version.tar.gz
+cd mysql-$mysql_5_7_version
+make clean
 cmake . -DCMAKE_INSTALL_PREFIX=$mysql_install_dir \
 -DMYSQL_DATADIR=$mysql_data_dir \
--DDOWNLOAD_BOOST=1 \
--DWITH_BOOST=../boost_1_59_0 \
 -DSYSCONFDIR=/etc \
 -DWITH_INNOBASE_STORAGE_ENGINE=1 \
 -DWITH_PARTITION_STORAGE_ENGINE=1 \
@@ -53,7 +60,7 @@ make install
 if [ -d "$mysql_install_dir/support-files" ];then
     echo "${CSUCCESS}MySQL install successfully! ${CEND}"
     cd ..
-    rm -rf mysql-$mysql_7_version
+    rm -rf mysql-$mysql_5_7_version
 else
     rm -rf $mysql_install_dir
     echo "${CFAILURE}MySQL install failed, Please contact the author! ${CEND}"
@@ -75,6 +82,10 @@ cat > /etc/my.cnf << EOF
 port = 3306
 socket = /tmp/mysql.sock
 default-character-set = utf8mb4
+
+[mysql]
+prompt="MySQL [\\d]> "
+no-auto-rehash
 
 [mysqld]
 port = 3306
@@ -119,7 +130,7 @@ ft_min_word_len = 4
 
 log_bin = mysql-bin
 binlog_format = mixed
-expire_logs_days = 30
+expire_logs_days = 7 
 
 log_error = $mysql_data_dir/mysql-error.log
 slow_query_log = 1
@@ -197,6 +208,7 @@ fi
 $mysql_install_dir/bin/mysqld --initialize-insecure --user=mysql --basedir=$mysql_install_dir --datadir=$mysql_data_dir
 
 chown mysql.mysql -R $mysql_data_dir
+[ -d '/etc/mysql' ] && mv /etc/mysql{,_bk}
 service mysqld start
 [ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=$mysql_install_dir/bin:\$PATH" >> /etc/profile 
 [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep $mysql_install_dir /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=$mysql_install_dir/bin:\1@" /etc/profile

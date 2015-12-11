@@ -15,7 +15,7 @@ src_url=http://ftp.gnu.org/pub/gnu/libiconv/libiconv-$libiconv_version.tar.gz &&
 src_url=http://downloads.sourceforge.net/project/mcrypt/Libmcrypt/$libmcrypt_version/libmcrypt-$libmcrypt_version.tar.gz && Download_src
 src_url=http://downloads.sourceforge.net/project/mhash/mhash/$mhash_version/mhash-$mhash_version.tar.gz && Download_src
 src_url=http://downloads.sourceforge.net/project/mcrypt/MCrypt/$mcrypt_version/mcrypt-$mcrypt_version.tar.gz && Download_src
-src_url=https://downloads.php.net/~ab/php-$php_7_version.tar.gz && Download_src
+src_url=http://www.php.net/distributions/php-$php_7_version.tar.gz && Download_src
 
 tar xzf libiconv-$libiconv_version.tar.gz
 cd libiconv-$libiconv_version
@@ -71,7 +71,7 @@ make clean
 ./buildconf
 [ ! -d "$php_install_dir" ] && mkdir -p $php_install_dir
 [ "$PHP_cache" == '1' ] && PHP_cache_tmp='--enable-opcache' || PHP_cache_tmp='--disable-opcache'
-if [ "$Apache_version" == '1' -o "$Apache_version" == '2' ];then
+if [[ $Apache_version =~ ^[1-2]$ ]];then
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
 --with-apxs2=$apache_install_dir/bin/apxs $PHP_cache_tmp --disable-fileinfo \
 --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
@@ -147,7 +147,7 @@ if [ "$PHP_cache" == '1' ];then
     sed -i 's@^;opcache.optimization_level.*@;opcache.optimization_level=0@' $php_install_dir/etc/php.ini
 fi
 
-if [ "$Apache_version" != '1' -a "$Apache_version" != '2' ];then
+if [[ ! $Apache_version =~ ^[1-2]$ ]];then
     # php-fpm Init Script
     /bin/cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
     chmod +x /etc/init.d/php-fpm
@@ -199,6 +199,7 @@ pm.process_idle_timeout = 10s
 request_terminate_timeout = 120
 request_slowlog_timeout = 0
 
+pm.status_path = /php-fpm_status
 slowlog = log/slow.log
 rlimit_files = 51200
 rlimit_core = 0
@@ -243,7 +244,7 @@ EOF
     #[ "$Web_yn" == 'n' ] && sed -i "s@^listen =.*@listen = $IPADDR:9000@" $php_install_dir/etc/php-fpm.conf 
     service php-fpm start
 
-elif [ "$Apache_version" == '1' -o "$Apache_version" == '2' ];then
+elif [[ $Apache_version =~ ^[1-2]$ ]];then
     service httpd restart
 fi
 cd ..
