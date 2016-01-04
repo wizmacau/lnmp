@@ -336,7 +336,7 @@ if [ "$rewrite_yn" == 'n' ];then
 else
     echo
     echo "Please input the rewrite of programme :"
-    echo "${CMSG}wordpress${CEND},${CMSG}discuz${CEND},${CMSG}opencart${CEND},${CMSG}thinkphp${CEND},${CMSG}laravel${CEND},${CMSG}typecho${CEND},${CMSG}ecshop${CEND},${CMSG}drupal${CEND},${CMSG}joomla${CEND} rewrite was exist."
+    echo "${CMSG}symfony2${CEND},${CMSG}wordpress${CEND},${CMSG}discuz${CEND},${CMSG}opencart${CEND},${CMSG}thinkphp${CEND},${CMSG}laravel${CEND},${CMSG}typecho${CEND},${CMSG}ecshop${CEND},${CMSG}drupal${CEND},${CMSG}joomla${CEND} rewrite was exist."
     read -p "(Default rewrite: other):" rewrite
     if [ "$rewrite" == "" ]; then
     	rewrite="other"
