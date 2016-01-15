@@ -56,10 +56,8 @@ fi
 
 /bin/cp $percona_install_dir/support-files/mysql.server /etc/init.d/mysqld
 chmod +x /etc/init.d/mysqld
-OS_CentOS='chkconfig --add mysqld \n
-chkconfig mysqld on'
-OS_Debian_Ubuntu='update-rc.d mysqld defaults'
-OS_command
+[ "$OS" == 'CentOS' ] && { chkconfig --add mysqld; chkconfig mysqld on; }
+[[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d mysqld defaults
 cd ..
 
 # my.cf
@@ -70,13 +68,13 @@ port = 3306
 socket = /tmp/mysql.sock
 default-character-set = utf8mb4
 
-[mysqld]
-port = 3306
-socket = /tmp/mysql.sock
-
 [mysql]
 prompt="Percona [\\d]> "
 no-auto-rehash
+
+[mysqld]
+port = 3306
+socket = /tmp/mysql.sock
 
 basedir = $percona_install_dir
 datadir = $percona_data_dir

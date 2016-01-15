@@ -11,7 +11,7 @@
 Install_Nginx()
 {
 cd $oneinstack_dir/src
-src_url=http://downloads.sourceforge.net/project/pcre/pcre/$pcre_version/pcre-$pcre_version.tar.gz && Download_src
+src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
 src_url=http://nginx.org/download/nginx-$nginx_version.tar.gz && Download_src
 
 tar xzf pcre-$pcre_version.tar.gz
@@ -58,12 +58,8 @@ fi
 [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep $nginx_install_dir /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=$nginx_install_dir/sbin:\1@" /etc/profile
 . /etc/profile
 
-OS_CentOS='/bin/cp ../init.d/Nginx-init-CentOS /etc/init.d/nginx \n
-chkconfig --add nginx \n
-chkconfig nginx on'
-OS_Debian_Ubuntu='/bin/cp ../init.d/Nginx-init-Ubuntu /etc/init.d/nginx \n
-update-rc.d nginx defaults'
-OS_command
+[ "$OS" == 'CentOS' ] && { /bin/cp ../init.d/Nginx-init-CentOS /etc/init.d/nginx; chkconfig --add nginx; chkconfig nginx on; } 
+[[ $OS =~ ^Ubuntu$|^Debian$ ]] && { /bin/cp ../init.d/Nginx-init-Ubuntu /etc/init.d/nginx; update-rc.d nginx defaults; } 
 cd ..
 
 sed -i "s@/usr/local/nginx@$nginx_install_dir@g" /etc/init.d/nginx

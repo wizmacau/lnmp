@@ -19,7 +19,8 @@ id -u $run_user >/dev/null 2>&1
 tar xzf httpd-$apache_2_version.tar.gz
 cd httpd-$apache_2_version
 [ ! -d "$apache_install_dir" ] && mkdir -p $apache_install_dir
-./configure --prefix=$apache_install_dir --enable-headers --enable-deflate --enable-mime-magic --enable-so --enable-rewrite --enable-ssl --with-ssl --enable-expires --enable-static-support --enable-suexec --disable-userdir --with-included-apr --with-mpm=prefork --disable-userdir
+[ "$ZendGuardLoader_yn" == 'y' -o "$ionCube_yn" == 'y' ] && MPM=prefork || MPM=worker
+./configure --prefix=$apache_install_dir --enable-headers --enable-deflate --enable-mime-magic --enable-so --enable-rewrite --enable-ssl --with-ssl --enable-expires --enable-static-support --enable-suexec --disable-userdir --with-included-apr --with-mpm=$MPM --disable-userdir
 make && make install
 if [ -e "$apache_install_dir/conf/httpd.conf" ];then
     echo "${CSUCCESS}Apache install successfully! ${CEND}"
@@ -39,10 +40,8 @@ fi
 sed -i '2a # chkconfig: - 85 15' /etc/init.d/httpd
 sed -i '3a # description: Apache is a World Wide Web server. It is used to serve' /etc/init.d/httpd
 chmod +x /etc/init.d/httpd
-OS_CentOS='chkconfig --add httpd \n
-chkconfig httpd on'
-OS_Debian_Ubuntu='update-rc.d httpd defaults'
-OS_command
+[ "$OS" == 'CentOS' ] && { chkconfig --add httpd; chkconfig httpd on; }
+[[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d httpd defaults
 
 sed -i "s@^User daemon@User $run_user@" $apache_install_dir/conf/httpd.conf
 sed -i "s@^Group daemon@Group $run_user@" $apache_install_dir/conf/httpd.conf

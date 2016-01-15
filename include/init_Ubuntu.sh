@@ -25,7 +25,7 @@ do
     apt-get -y install $Package
 done
 
-if [ "$Ubuntu_version" == '14' ];then
+if [[ "$Ubuntu_version" =~ ^14$|^15$ ]];then 
     apt-get -y install libcloog-ppl1
     apt-get -y remove bison
     cd src
@@ -120,6 +120,7 @@ else
 fi
 
 if [ "$IPTABLES_STATUS" == 'no' ];then
+    [ -e '/etc/iptables.up.rules' ] && /bin/mv /etc/iptables.up.rules{,_bk} 
     cat > /etc/iptables.up.rules << EOF
 # Firewall configuration written by system-config-securitylevel
 # Manual customization of this file is not recommended.

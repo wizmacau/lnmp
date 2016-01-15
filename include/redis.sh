@@ -30,19 +30,14 @@ if [ -f "src/redis-server" ];then
     sed -i "s@logfile.*@logfile $redis_install_dir/var/redis.log@" $redis_install_dir/etc/redis.conf
     sed -i "s@^dir.*@dir $redis_install_dir/var@" $redis_install_dir/etc/redis.conf
     sed -i 's@daemonize no@daemonize yes@' $redis_install_dir/etc/redis.conf
+    sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" $redis_install_dir/etc/redis.conf
     redis_maxmemory=`expr $Mem / 8`000000
     [ -z "`grep ^maxmemory $redis_install_dir/etc/redis.conf`" ] && sed -i "s@maxmemory <bytes>@maxmemory <bytes>\nmaxmemory `expr $Mem / 8`000000@" $redis_install_dir/etc/redis.conf
     echo "${CSUCCESS}Redis-server install successfully! ${CEND}"
     cd ..
     rm -rf redis-$redis_version
-    OS_CentOS='/bin/cp ../init.d/Redis-server-init-CentOS /etc/init.d/redis-server \n
-chkconfig --add redis-server \n
-chkconfig redis-server on'
-    OS_Debian_Ubuntu="useradd -M -s /sbin/nologin redis \n
-chown -R redis:redis $redis_install_dir/var/ \n
-/bin/cp ../init.d/Redis-server-init-Ubuntu /etc/init.d/redis-server \n
-update-rc.d redis-server defaults"
-    OS_command
+    [ "$OS" == 'CentOS' ] && { /bin/cp ../init.d/Redis-server-init-CentOS /etc/init.d/redis-server; chkconfig --add redis-server; chkconfig redis-server on; } 
+    [[ $OS =~ ^Ubuntu$|^Debian$ ]] && { useradd -M -s /sbin/nologin redis; chown -R redis:redis $redis_install_dir/var/; /bin/cp ../init.d/Redis-server-init-Ubuntu /etc/init.d/redis-server; update-rc.d redis-server defaults; } 
     sed -i "s@/usr/local/redis@$redis_install_dir@g" /etc/init.d/redis-server
     #[ -z "`grep 'vm.overcommit_memory' /etc/sysctl.conf`" ] && echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
     #sysctl -p
@@ -59,8 +54,11 @@ Install_php-redis() {
 cd $oneinstack_dir/src
 if [ -e "$php_install_dir/bin/phpize" ];then
     if [ "`$php_install_dir/bin/php -r 'echo PHP_VERSION;' | awk -F. '{print $1}'`" == '7' ];then
-        git clone -b php7 https://github.com/phpredis/phpredis.git
-        cd phpredis
+        #git clone -b php7 https://github.com/phpredis/phpredis.git
+        #cd phpredis
+        src_url=http://mirrors.linuxeye.com/oneinstack/src/phpredis-php7.tgz && Download_src
+        tar xzf phpredis-php7.tgz
+        cd phpredis-php7
     else
         src_url=http://pecl.php.net/get/redis-$redis_pecl_version.tgz && Download_src
         tar xzf redis-$redis_pecl_version.tgz

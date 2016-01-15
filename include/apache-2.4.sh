@@ -11,7 +11,7 @@
 Install_Apache-2-4()
 {
 cd $oneinstack_dir/src
-src_url=http://downloads.sourceforge.net/project/pcre/pcre/$pcre_version/pcre-$pcre_version.tar.gz && Download_src
+src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
 src_url=http://archive.apache.org/dist/apr/apr-$apr_version.tar.gz && Download_src 
 src_url=http://archive.apache.org/dist/apr/apr-util-$apr_util_version.tar.gz && Download_src 
 src_url=http://mirrors.linuxeye.com/apache/httpd/httpd-$apache_4_version.tar.gz && Download_src 
@@ -32,7 +32,8 @@ cd httpd-$apache_4_version
 [ ! -d "$apache_install_dir" ] && mkdir -p $apache_install_dir
 /bin/cp -R ../apr-$apr_version ./srclib/apr
 /bin/cp -R ../apr-util-$apr_util_version ./srclib/apr-util
-./configure --prefix=$apache_install_dir --enable-headers --enable-deflate --enable-mime-magic --enable-so --enable-rewrite --enable-ssl --with-ssl --enable-expires --enable-static-support --enable-suexec --disable-userdir --with-included-apr --with-mpm=prefork --disable-userdir
+[ "$ZendGuardLoader_yn" == 'y' -o "$ionCube_yn" == 'y' ] && MPM=prefork || MPM=worker
+./configure --prefix=$apache_install_dir --enable-headers --enable-deflate --enable-mime-magic --enable-so --enable-rewrite --enable-ssl --with-ssl --enable-expires --enable-static-support --enable-suexec --disable-userdir --with-included-apr --with-mpm=$MPM --disable-userdir
 make && make install
 if [ -e "$apache_install_dir/conf/httpd.conf" ];then
     echo "${CSUCCESS}Apache install successfully! ${CEND}"
@@ -52,10 +53,8 @@ fi
 sed -i '2a # chkconfig: - 85 15' /etc/init.d/httpd
 sed -i '3a # description: Apache is a World Wide Web server. It is used to serve' /etc/init.d/httpd
 chmod +x /etc/init.d/httpd
-OS_CentOS='chkconfig --add httpd \n
-chkconfig httpd on'
-OS_Debian_Ubuntu='update-rc.d httpd defaults'
-OS_command
+[ "$OS" == 'CentOS' ] && { chkconfig --add httpd; chkconfig httpd on; }
+[[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d httpd defaults
 
 sed -i "s@^User daemon@User $run_user@" $apache_install_dir/conf/httpd.conf
 sed -i "s@^Group daemon@Group $run_user@" $apache_install_dir/conf/httpd.conf

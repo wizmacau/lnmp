@@ -18,10 +18,9 @@ src_url=http://downloads.sourceforge.net/project/mcrypt/MCrypt/$mcrypt_version/m
 src_url=http://www.php.net/distributions/php-$php_7_version.tar.gz && Download_src
 
 tar xzf libiconv-$libiconv_version.tar.gz
+patch -d libiconv-$libiconv_version -p0 < libiconv-glibc-2.16.patch
 cd libiconv-$libiconv_version
 ./configure --prefix=/usr/local
-[ "$Ubuntu_version" == '13' ] && sed -i 's@_GL_WARN_ON_USE (gets@//_GL_WARN_ON_USE (gets@' srclib/stdio.h 
-[ "$Ubuntu_version" == '14' ] && sed -i 's@gets is a security@@' srclib/stdio.h 
 make && make install
 cd ..
 rm -rf libiconv-$libiconv_version
@@ -46,13 +45,7 @@ rm -rf mhash-$mhash_version
 
 echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
 ldconfig
-OS_CentOS='ln -s /usr/local/bin/libmcrypt-config /usr/bin/libmcrypt-config \n
-if [ `getconf WORD_BIT` == 32 ] && [ `getconf LONG_BIT` == 64 ];then \n
-        ln -s /lib64/libpcre.so.0.0.1 /lib64/libpcre.so.1 \n
-else \n
-        ln -s /lib/libpcre.so.0.0.1 /lib/libpcre.so.1 \n
-fi'
-OS_command
+[ "$OS" == 'CentOS' ] && { ln -s /usr/local/bin/libmcrypt-config /usr/bin/libmcrypt-config; [ "$OS_BIT" == '64' ] && ln -s /lib64/libpcre.so.0.0.1 /lib64/libpcre.so.1 || ln -s /lib/libpcre.so.0.0.1 /lib/libpcre.so.1; }
 
 tar xzf mcrypt-$mcrypt_version.tar.gz
 cd mcrypt-$mcrypt_version
@@ -74,7 +67,7 @@ make clean
 if [[ $Apache_version =~ ^[1-2]$ ]];then
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
 --with-apxs2=$apache_install_dir/bin/apxs $PHP_cache_tmp --disable-fileinfo \
---with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
+--enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
 --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
 --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-inline-optimization \
@@ -84,7 +77,7 @@ if [[ $Apache_version =~ ^[1-2]$ ]];then
 else
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
 --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm $PHP_cache_tmp --disable-fileinfo \
---with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
+--enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
 --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
 --enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-inline-optimization \
@@ -119,14 +112,11 @@ sed -i 's@^short_open_tag = Off@short_open_tag = On@' $php_install_dir/etc/php.i
 sed -i 's@^expose_php = On@expose_php = Off@' $php_install_dir/etc/php.ini
 sed -i 's@^request_order.*@request_order = "CGP"@' $php_install_dir/etc/php.ini
 sed -i 's@^;date.timezone.*@date.timezone = Asia/Shanghai@' $php_install_dir/etc/php.ini
-sed -i 's@^post_max_size.*@post_max_size = 50M@' $php_install_dir/etc/php.ini
+sed -i 's@^post_max_size.*@post_max_size = 100M@' $php_install_dir/etc/php.ini
 sed -i 's@^upload_max_filesize.*@upload_max_filesize = 50M@' $php_install_dir/etc/php.ini
-sed -i 's@^;upload_tmp_dir.*@upload_tmp_dir = /tmp@' $php_install_dir/etc/php.ini
 sed -i 's@^max_execution_time.*@max_execution_time = 600@' $php_install_dir/etc/php.ini
 sed -i 's@^;realpath_cache_size.*@realpath_cache_size = 2M@' $php_install_dir/etc/php.ini
 sed -i 's@^disable_functions.*@disable_functions = passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,popen@' $php_install_dir/etc/php.ini
-sed -i 's@^session.cookie_httponly.*@session.cookie_httponly = 1@' $php_install_dir/etc/php.ini
-sed -i 's@^mysqlnd.collect_memory_statistics.*@mysqlnd.collect_memory_statistics = On@' $php_install_dir/etc/php.ini
 [ -e /usr/sbin/sendmail ] && sed -i 's@^;sendmail_path.*@sendmail_path = /usr/sbin/sendmail -t -i@' $php_install_dir/etc/php.ini
 
 if [ "$PHP_cache" == '1' ];then
@@ -151,10 +141,8 @@ if [[ ! $Apache_version =~ ^[1-2]$ ]];then
     # php-fpm Init Script
     /bin/cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
     chmod +x /etc/init.d/php-fpm
-    OS_CentOS='chkconfig --add php-fpm \n
-chkconfig php-fpm on'
-    OS_Debian_Ubuntu='update-rc.d php-fpm defaults'
-    OS_command
+    [ "$OS" == 'CentOS' ] && { chkconfig --add php-fpm; chkconfig php-fpm on; }
+    [[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d php-fpm defaults
 
     cat > $php_install_dir/etc/php-fpm.conf <<EOF
 ;;;;;;;;;;;;;;;;;;;;;

@@ -57,14 +57,13 @@ fi
 
 /bin/cp $mysql_install_dir/support-files/mysql.server /etc/init.d/mysqld
 chmod +x /etc/init.d/mysqld
-OS_CentOS='chkconfig --add mysqld \n
-chkconfig mysqld on'
-OS_Debian_Ubuntu='update-rc.d mysqld defaults'
-OS_command
+[ "$OS" == 'CentOS' ] && { chkconfig --add mysqld; chkconfig mysqld on; }
+[[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d mysqld defaults
 cd ..
 
 # my.cf
 [ -d "/etc/mysql" ] && /bin/mv /etc/mysql{,_bk}
+[ -e "$mysql_install_dir/my.cnf" ] && rm -rf $mysql_install_dir/my.cnf
 cat > /etc/my.cnf << EOF
 [client]
 port = 3306

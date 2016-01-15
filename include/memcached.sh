@@ -26,12 +26,8 @@ if [ -d "$memcached_install_dir/include/memcached" ];then
     cd ..
     rm -rf memcached-$memcached_version
     ln -s $memcached_install_dir/bin/memcached /usr/bin/memcached
-    OS_CentOS='/bin/cp ../init.d/Memcached-init-CentOS /etc/init.d/memcached \n
-chkconfig --add memcached \n
-chkconfig memcached on'
-    OS_Debian_Ubuntu='/bin/cp ../init.d/Memcached-init-Ubuntu /etc/init.d/memcached \n
-update-rc.d memcached defaults'
-    OS_command
+    [ "$OS" == 'CentOS' ] && { /bin/cp ../init.d/Memcached-init-CentOS /etc/init.d/memcached; chkconfig --add memcached; chkconfig memcached on; } 
+    [[ $OS =~ ^Ubuntu$|^Debian$ ]] && { /bin/cp ../init.d/Memcached-init-Ubuntu /etc/init.d/memcached; update-rc.d memcached defaults; } 
     sed -i "s@/usr/local/memcached@$memcached_install_dir@g" /etc/init.d/memcached
     [ -n "`grep 'CACHESIZE=' /etc/init.d/memcached`" ] && sed -i "s@^CACHESIZE=.*@CACHESIZE=`expr $Mem / 8`@" /etc/init.d/memcached 
     [ -n "`grep 'start_instance default 256;' /etc/init.d/memcached`" ] && sed -i "s@start_instance default 256;@start_instance default `expr $Mem / 8`;@" /etc/init.d/memcached
@@ -46,11 +42,19 @@ cd ..
 
 Install_php-memcache() {
 cd $oneinstack_dir/src
-if [ -e "$php_install_dir/bin/phpize" ] && [ "`$php_install_dir/bin/php -r 'echo PHP_VERSION;' | awk -F. '{print $1}'`" == '5' ];then
-    src_url=http://pecl.php.net/get/memcache-$memcache_pecl_version.tgz && Download_src
+if [ -e "$php_install_dir/bin/phpize" ];then
     # php memcache extension
-    tar xzf memcache-$memcache_pecl_version.tgz 
-    cd memcache-$memcache_pecl_version 
+    if [ "`$php_install_dir/bin/php -r 'echo PHP_VERSION;' | awk -F. '{print $1}'`" == '7' ];then
+        #git clone https://github.com/websupport-sk/pecl-memcache.git
+        #cd pecl-memcache
+        src_url=http://mirrors.linuxeye.com/oneinstack/src/pecl-memcache-php7.tgz && Download_src
+        tar xzf pecl-memcache-php7.tgz
+        cd pecl-memcache-php7
+    else
+        src_url=http://pecl.php.net/get/memcache-$memcache_pecl_version.tgz && Download_src
+        tar xzf memcache-$memcache_pecl_version.tgz 
+        cd memcache-$memcache_pecl_version 
+    fi
     make clean
     $php_install_dir/bin/phpize
     ./configure --with-php-config=$php_install_dir/bin/php-config
@@ -76,17 +80,19 @@ if [ -e "$php_install_dir/bin/phpize" ];then
     # php memcached extension
     tar xzf libmemcached-$libmemcached_version.tar.gz
     cd libmemcached-$libmemcached_version
-    OS_CentOS='yum -y install cyrus-sasl-devel'
-    OS_Debian_Ubuntu='sed -i "s@lthread -pthread -pthreads@lthread -lpthread -pthreads@" ./configure'
-    OS_command
+    [ "$OS" == 'CentOS' ] && yum -y install cyrus-sasl-devel 
+    [[ $OS =~ ^Ubuntu$|^Debian$ ]] && sed -i "s@lthread -pthread -pthreads@lthread -lpthread -pthreads@" ./configure 
     ./configure --with-memcached=$memcached_install_dir
     make && make install
     cd ..
     rm -rf libmemcached-$libmemcached_version
 
     if [ "`$php_install_dir/bin/php -r 'echo PHP_VERSION;' | awk -F. '{print $1}'`" == '7' ];then
-        git clone -b php7 https://github.com/php-memcached-dev/php-memcached.git 
-        cd php-memcached 
+        #git clone -b php7 https://github.com/php-memcached-dev/php-memcached.git 
+        #cd php-memcached 
+        src_url=http://mirrors.linuxeye.com/oneinstack/src/php-memcached-php7.tgz && Download_src
+        tar xzf php-memcached-php7.tgz
+        cd php-memcached-php7
     else
         src_url=http://pecl.php.net/get/memcached-$memcached_pecl_version.tgz && Download_src
         tar xzf memcached-$memcached_pecl_version.tgz

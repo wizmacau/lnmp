@@ -11,7 +11,7 @@
 Install_Tengine()
 {
 cd $oneinstack_dir/src
-src_url=http://downloads.sourceforge.net/project/pcre/pcre/$pcre_version/pcre-$pcre_version.tar.gz && Download_src
+src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
 src_url=http://tengine.taobao.org/download/tengine-$tengine_version.tar.gz && Download_src
 
 tar xzf pcre-$pcre_version.tar.gz
@@ -56,12 +56,8 @@ fi
 [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep $tengine_install_dir /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=$tengine_install_dir/sbin:\1@" /etc/profile
 . /etc/profile
 
-OS_CentOS='/bin/cp ../init.d/Nginx-init-CentOS /etc/init.d/nginx \n
-chkconfig --add nginx \n
-chkconfig nginx on'
-OS_Debian_Ubuntu='/bin/cp ../init.d/Nginx-init-Ubuntu /etc/init.d/nginx \n
-update-rc.d nginx defaults'
-OS_command
+[ "$OS" == 'CentOS' ] && { /bin/cp ../init.d/Nginx-init-CentOS /etc/init.d/nginx; chkconfig --add nginx; chkconfig nginx on; } 
+[[ $OS =~ ^Ubuntu$|^Debian$ ]] && { /bin/cp ../init.d/Nginx-init-Ubuntu /etc/init.d/nginx; update-rc.d nginx defaults; } 
 cd ..
 
 sed -i "s@/usr/local/nginx@$tengine_install_dir@g" /etc/init.d/nginx
@@ -95,7 +91,7 @@ sed -i "s@/data/wwwroot/default@$wwwroot_dir/default@" $tengine_install_dir/conf
 sed -i "s@/data/wwwlogs@$wwwlogs_dir@g" $tengine_install_dir/conf/nginx.conf
 sed -i "s@^user www www@user $run_user $run_user@" $tengine_install_dir/conf/nginx.conf
 [ "$je_tc_malloc" == '2' ] && sed -i 's@^pid\(.*\)@pid\1\ngoogle_perftools_profiles /tmp/tcmalloc;@' $tengine_install_dir/conf/nginx.conf 
-[ -z "`grep 'reuse_port on;' $tengine_install_dir/conf/nginx.conf`" ] && sed -i "s@worker_connections 51200;@worker_connections 51200;\n    reuse_port on;@" $tengine_install_dir/conf/nginx.conf
+uname -r | awk -F'.' '{if ($1$2>=39)S=0;else S=1}{exit S}' && [ -z "`grep 'reuse_port on;' $tengine_install_dir/conf/nginx.conf`" ] && sed -i "s@worker_connections 51200;@worker_connections 51200;\n    reuse_port on;@" $tengine_install_dir/conf/nginx.conf
 
 # worker_cpu_affinity
 sed -i "s@^worker_processes.*@worker_processes auto;\nworker_cpu_affinity auto;\ndso {\n\tload ngx_http_concat_module.so;\n\tload ngx_http_sysguard_module.so;\n}@" $tengine_install_dir/conf/nginx.conf
