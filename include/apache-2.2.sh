@@ -89,14 +89,14 @@ NameVirtualHost *:$TMP_PORT
     ServerName $TMP_IP 
     ErrorLog "$wwwlogs_dir/error_apache.log"
     CustomLog "$wwwlogs_dir/access_apache.log" common
-<Directory "$wwwroot_dir/default">
-    SetOutputFilter DEFLATE
-    Options FollowSymLinks ExecCGI
-    AllowOverride All
-    Order allow,deny
-    Allow from all
-    DirectoryIndex index.html index.php
-</Directory>
+    <Directory "$wwwroot_dir/default">
+        SetOutputFilter DEFLATE
+        Options FollowSymLinks ExecCGI
+        AllowOverride All
+        Order allow,deny
+        Allow from all
+        DirectoryIndex index.html index.php
+    </Directory>
 </VirtualHost>
 EOF
 
