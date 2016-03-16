@@ -29,7 +29,7 @@ yum check-update
 [ "$upgrade_yn" == 'y' ] && yum -y upgrade
 
 # Install needed packages
-for Package in deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sysstat patch bc expect rsync git lsof lrzsz
+for Package in deltarpm gcc gcc-c++ make cmake autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses ncurses-devel libaio readline-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5-devel libidn libidn-devel openssl openssl-devel libxslt-devel libicu-devel libevent-devel libtool libtool-ltdl bison gd-devel vim-enhanced pcre-devel zip unzip ntpdate sysstat patch bc expect rsync git lsof lrzsz
 do
     yum -y install $Package
 done
@@ -119,12 +119,15 @@ if [ "$CentOS_RHEL_version" == '5' ];then
 elif [ "$CentOS_RHEL_version" == '6' ];then
     sed -i 's@^ACTIVE_CONSOLES.*@ACTIVE_CONSOLES=/dev/tty[1-2]@' /etc/sysconfig/init	
     sed -i 's@^start@#start@' /etc/init/control-alt-delete.conf
+    sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/sysconfig/i18n
+elif [ "$CentOS_RHEL_version" == '7' ];then
+    sed -i 's@LANG=.*$@LANG="en_US.UTF-8"@g' /etc/locale.conf 
 fi
 init q
 
 # Update time
 ntpdate pool.ntp.org 
-[ -z "`grep 'pool.ntp.org' /var/spool/cron/root`" ] && { echo "*/20 * * * * `which ntpdate` pool.ntp.org > /dev/null 2>&1" >> /var/spool/cron/root;chmod 600 /var/spool/cron/root; }
+[ -z "`grep 'ntpdate' /var/spool/cron/root`" ] && { echo "*/20 * * * * `which ntpdate` pool.ntp.org > /dev/null 2>&1" >> /var/spool/cron/root;chmod 600 /var/spool/cron/root; }
 service crond restart
 
 # iptables
@@ -191,9 +194,9 @@ fi
 # install htop
 if [ ! -e "`which htop`" ];then
     cd src
-    src_url=http://hisham.hm/htop/releases/1.0.3/htop-1.0.3.tar.gz && Download_src 
-    tar xzf htop-1.0.3.tar.gz
-    cd htop-1.0.3
+    src_url=http://hisham.hm/htop/releases/2.0.0/htop-2.0.0.tar.gz && Download_src 
+    tar xzf htop-2.0.0.tar.gz
+    cd htop-2.0.0
     ./configure
     make && make install
     cd ../../

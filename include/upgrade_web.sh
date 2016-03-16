@@ -8,8 +8,7 @@
 #       http://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
-Upgrade_Nginx()
-{
+Upgrade_Nginx() {
 cd $oneinstack_dir/src
 [ ! -e "$nginx_install_dir/sbin/nginx" ] && echo "${CWARNING}The Nginx is not installed on your system! ${CEND}" && exit 1
 OLD_Nginx_version_tmp=`$nginx_install_dir/sbin/nginx -v 2>&1`
@@ -40,6 +39,7 @@ if [ -e "nginx-$NEW_Nginx_version.tar.gz" ];then
     tar xzf nginx-$NEW_Nginx_version.tar.gz
     cd nginx-$NEW_Nginx_version
     make clean
+    sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc # close debug
     $nginx_install_dir/sbin/nginx -V &> $$
     nginx_configure_arguments=`cat $$ | grep 'configure arguments:' | awk -F: '{print $2}'`
     rm -rf $$
@@ -59,8 +59,7 @@ fi
 cd ..
 }
 
-Upgrade_Tengine()
-{
+Upgrade_Tengine() {
 cd $oneinstack_dir/src
 [ ! -e "$tengine_install_dir/sbin/nginx" ] && echo "${CWARNING}The Tengine is not installed on your system! ${CEND}" && exit 1
 OLD_Tengine_version_tmp=`$tengine_install_dir/sbin/nginx -v 2>&1`
@@ -91,8 +90,7 @@ if [ -e "tengine-$NEW_Tengine_version.tar.gz" ];then
     tar xzf tengine-$NEW_Tengine_version.tar.gz
     cd tengine-$NEW_Tengine_version
     make clean
-    # close debug
-    sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc
+    sed -i 's@CFLAGS="$CFLAGS -g"@#CFLAGS="$CFLAGS -g"@' auto/cc/gcc # close debug
     $tengine_install_dir/sbin/nginx -V &> $$
     tengine_configure_arguments=`cat $$ | grep 'configure arguments:' | awk -F: '{print $2}'`
     rm -rf $$
