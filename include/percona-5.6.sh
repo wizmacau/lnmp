@@ -8,8 +8,7 @@
 #       http://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
-Install_Percona-5-6()
-{
+Install_Percona-5-6() {
 cd $oneinstack_dir/src
 src_url=https://www.percona.com/downloads/Percona-Server-5.6/Percona-Server-$percona_5_6_version/source/tarball/percona-server-$percona_5_6_version.tar.gz && Download_src
 
@@ -59,7 +58,7 @@ chmod +x /etc/init.d/mysqld
 [[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d mysqld defaults
 cd ..
 
-# my.cf
+# my.cnf
 [ -d "/etc/mysql" ] && /bin/mv /etc/mysql{,_bk}
 cat > /etc/my.cnf << EOF
 [client]
@@ -162,6 +161,7 @@ read_buffer = 4M
 write_buffer = 4M
 EOF
 
+sed -i "s@max_connections.*@max_connections = $(($Mem/2))@" /etc/my.cnf 
 if [ $Mem -gt 1500 -a $Mem -le 2500 ];then
     sed -i 's@^thread_cache_size.*@thread_cache_size = 16@' /etc/my.cnf
     sed -i 's@^query_cache_size.*@query_cache_size = 16M@' /etc/my.cnf

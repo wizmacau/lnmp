@@ -8,8 +8,7 @@
 #       http://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
-Install_MySQL-5-5()
-{
+Install_MySQL-5-5() {
 cd $oneinstack_dir/src
 src_url=http://cdn.mysql.com/Downloads/MySQL-5.5/mysql-$mysql_5_5_version.tar.gz && Download_src
 
@@ -61,9 +60,8 @@ chmod +x /etc/init.d/mysqld
 [[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d mysqld defaults
 cd ..
 
-# my.cf
+# my.cnf
 [ -d "/etc/mysql" ] && /bin/mv /etc/mysql{,_bk}
-[ -e "$mysql_install_dir/my.cnf" ] && rm -rf $mysql_install_dir/my.cnf
 cat > /etc/my.cnf << EOF
 [client]
 port = 3306
@@ -164,6 +162,7 @@ read_buffer = 4M
 write_buffer = 4M
 EOF
 
+sed -i "s@max_connections.*@max_connections = $(($Mem/2))@" /etc/my.cnf 
 if [ $Mem -gt 1500 -a $Mem -le 2500 ];then
     sed -i 's@^thread_cache_size.*@thread_cache_size = 16@' /etc/my.cnf
     sed -i 's@^query_cache_size.*@query_cache_size = 16M@' /etc/my.cnf
@@ -207,6 +206,7 @@ $mysql_install_dir/bin/mysql -uroot -p$dbrootpwd -e "delete from mysql.proxies_p
 $mysql_install_dir/bin/mysql -uroot -p$dbrootpwd -e "drop database test;"
 $mysql_install_dir/bin/mysql -uroot -p$dbrootpwd -e "reset master;"
 rm -rf /etc/ld.so.conf.d/{mysql,mariadb,percona}*.conf
+[ -e "$mysql_install_dir/my.cnf" ] && rm -rf $mysql_install_dir/my.cnf
 echo "$mysql_install_dir/lib" > /etc/ld.so.conf.d/mysql.conf 
 ldconfig
 service mysqld stop
