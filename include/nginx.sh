@@ -10,7 +10,8 @@
 
 Install_Nginx() {
 cd $oneinstack_dir/src
-src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
+# src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
+src_url=http://mirror.wizmacau.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
 src_url=http://nginx.org/download/nginx-$nginx_version.tar.gz && Download_src
 
 tar xzf pcre-$pcre_version.tar.gz
