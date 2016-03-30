@@ -39,7 +39,7 @@ if [ -e "$tomcat_install_dir/conf/server.xml" ];then
     [ "$OS" == 'CentOS' ] && yum -y install apr apr-devel 
     [[ $OS =~ ^Ubuntu$|^Debian$ ]] && apt-get -y install libapr1-dev libaprutil1-dev 
     tar xzf tomcat-native.tar.gz 
-    cd tomcat-native-*-src/jni/native/
+    cd tomcat-native-*-src/native/
     rm -rf /usr/local/apr
     ./configure --with-apr=/usr/bin/apr-1-config
     make && make install
