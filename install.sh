@@ -99,49 +99,49 @@ while :; do echo
                 fi
             done
             # Tomcat
-            #while :; do echo
-            #    echo 'Please select tomcat server:'
-            #    echo -e "\t${CMSG}1${CEND}. Install Tomcat-8"
-            #    echo -e "\t${CMSG}2${CEND}. Install Tomcat-7"
-            #    echo -e "\t${CMSG}3${CEND}. Do not install"
-            #    read -p "Please input a number:(Default 3 press Enter) " Tomcat_version
-            #    [ -z "$Tomcat_version" ] && Tomcat_version=3
-            #    if [[ ! $Tomcat_version =~ ^[1-3]$ ]];then
-            #        echo "${CWARNING}input error! Please only input number 1,2,3${CEND}"
-            #    else
-            #        [ "$Tomcat_version" != '3' -a -e "$tomcat_install_dir/conf/server.xml" ] && { echo "${CWARNING}Tomcat already installed! ${CEND}" ; Tomcat_version=Other; }  
-            #        if [ "$Tomcat_version" == '1' ];then
-            #            while :; do echo
-            #                echo 'Please select JDK version:'
-            #                echo -e "\t${CMSG}1${CEND}. Install JDK-1.8"
-            #                echo -e "\t${CMSG}2${CEND}. Install JDK-1.7"
-            #                read -p "Please input a number:(Default 2 press Enter) " JDK_version
-            #                [ -z "$JDK_version" ] && JDK_version=2
-            #                if [[ ! $JDK_version =~ ^[1-2]$ ]];then
-            #                    echo "${CWARNING}input error! Please only input number 1,2${CEND}"
-            #                else
-            #                    break
-            #                fi
-            #            done
-            #        fi
-            #        if [ "$Tomcat_version" == '2' ];then
-            #            while :; do echo
-            #                echo 'Please select JDK version:'
-            #                echo -e "\t${CMSG}1${CEND}. Install JDK-1.8"
-            #                echo -e "\t${CMSG}2${CEND}. Install JDK-1.7"
-            #                echo -e "\t${CMSG}3${CEND}. Install JDK-1.6"
-            #                read -p "Please input a number:(Default 2 press Enter) " JDK_version
-            #                [ -z "$JDK_version" ] && JDK_version=2
-            #                if [[ ! $JDK_version =~ ^[1-3]$ ]];then
-            #                    echo "${CWARNING}input error! Please only input number 1,2,3${CEND}"
-            #                else
-            #                    break
-            #                fi
-            #            done
-            #        fi
-            #        break
-            #    fi
-            #done
+            while :; do echo
+               echo 'Please select tomcat server:'
+               echo -e "\t${CMSG}1${CEND}. Install Tomcat-8"
+               echo -e "\t${CMSG}2${CEND}. Install Tomcat-7"
+               echo -e "\t${CMSG}3${CEND}. Do not install"
+               read -p "Please input a number:(Default 3 press Enter) " Tomcat_version
+               [ -z "$Tomcat_version" ] && Tomcat_version=3
+               if [[ ! $Tomcat_version =~ ^[1-3]$ ]];then
+                   echo "${CWARNING}input error! Please only input number 1,2,3${CEND}"
+               else
+                   [ "$Tomcat_version" != '3' -a -e "$tomcat_install_dir/conf/server.xml" ] && { echo "${CWARNING}Tomcat already installed! ${CEND}" ; Tomcat_version=Other; }  
+                   if [ "$Tomcat_version" == '1' ];then
+                       while :; do echo
+                           echo 'Please select JDK version:'
+                           echo -e "\t${CMSG}1${CEND}. Install JDK-1.8"
+                           echo -e "\t${CMSG}2${CEND}. Install JDK-1.7"
+                           read -p "Please input a number:(Default 2 press Enter) " JDK_version
+                           [ -z "$JDK_version" ] && JDK_version=2
+                           if [[ ! $JDK_version =~ ^[1-2]$ ]];then
+                               echo "${CWARNING}input error! Please only input number 1,2${CEND}"
+                           else
+                               break
+                           fi
+                       done
+                   fi
+                   if [ "$Tomcat_version" == '2' ];then
+                       while :; do echo
+                           echo 'Please select JDK version:'
+                           echo -e "\t${CMSG}1${CEND}. Install JDK-1.8"
+                           echo -e "\t${CMSG}2${CEND}. Install JDK-1.7"
+                           echo -e "\t${CMSG}3${CEND}. Install JDK-1.6"
+                           read -p "Please input a number:(Default 2 press Enter) " JDK_version
+                           [ -z "$JDK_version" ] && JDK_version=2
+                           if [[ ! $JDK_version =~ ^[1-3]$ ]];then
+                               echo "${CWARNING}input error! Please only input number 1,2,3${CEND}"
+                           else
+                               break
+                           fi
+                       done
+                   fi
+                   break
+               fi
+            done
         fi
         break
     fi

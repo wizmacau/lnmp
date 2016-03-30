@@ -65,7 +65,8 @@ make clean
 [ "$PHP_cache" == '1' ] && PHP_cache_tmp='--enable-opcache' || PHP_cache_tmp='--disable-opcache'
 if [[ $Apache_version =~ ^[1-2]$ ]];then
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
---with-apxs2=$apache_install_dir/bin/apxs $PHP_cache_tmp --disable-fileinfo \
+--with-apxs2=$apache_install_dir/bin/apxs $PHP_cache_tmp \
+--with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm \
 --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
 --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
@@ -75,7 +76,7 @@ if [[ $Apache_version =~ ^[1-2]$ ]];then
 --with-gettext --enable-zip --enable-soap --disable-ipv6 --disable-debug
 else
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
---with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm $PHP_cache_tmp --disable-fileinfo \
+--with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm $PHP_cache_tmp \
 --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
 --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \

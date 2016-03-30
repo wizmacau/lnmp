@@ -10,10 +10,12 @@
 
 Install_Apache-2-4() {
 cd $oneinstack_dir/src
-src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
+# src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
+src_url=http://mirror.wizmacau.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
 src_url=http://archive.apache.org/dist/apr/apr-$apr_version.tar.gz && Download_src 
 src_url=http://archive.apache.org/dist/apr/apr-util-$apr_util_version.tar.gz && Download_src 
-src_url=http://mirrors.linuxeye.com/apache/httpd/httpd-$apache_4_version.tar.gz && Download_src 
+# src_url=http://mirrors.linuxeye.com/apache/httpd/httpd-$apache_4_version.tar.gz && Download_src 
+src_url=http://mirror.wizmacau.com/apache/httpd/httpd-$apache_4_version.tar.gz && Download_src 
 
 tar xzf pcre-$pcre_version.tar.gz
 cd pcre-$pcre_version
@@ -95,7 +97,7 @@ EOF
 mkdir $apache_install_dir/conf/vhost
 cat >> $apache_install_dir/conf/vhost/0.conf << EOF
 <VirtualHost *:$TMP_PORT>
-    ServerAdmin admin@linuxeye.com
+    ServerAdmin it@wizmacau.com
     DocumentRoot "$wwwroot_dir/default"
     ServerName $TMP_IP 
     ErrorLog "$wwwlogs_dir/error_apache.log"
@@ -107,7 +109,7 @@ cat >> $apache_install_dir/conf/vhost/0.conf << EOF
         AllowOverride All
         Order allow,deny
         Allow from all
-        DirectoryIndex index.html index.php
+        DirectoryIndex index.html index.php index.htm
     </Directory>
 </VirtualHost>
 EOF

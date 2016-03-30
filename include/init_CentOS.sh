@@ -81,7 +81,7 @@ EOF
 
 # Set timezone
 rm -rf /etc/localtime
-ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ln -s /usr/share/zoneinfo/Asia/Macao /etc/localtime
 
 # Set DNS
 #cat > /etc/resolv.conf << EOF
