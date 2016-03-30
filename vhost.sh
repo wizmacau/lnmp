@@ -199,7 +199,7 @@ fi
 while :
 do
     echo
-    read -p "Please input domain(example: www.linuxeye.com): " domain
+    read -p "Please input domain(example: www.wizmacau.com): " domain
     if [ -z "`echo $domain | grep '.*\..*'`" ]; then
         echo "${CWARNING}input error! ${CEND}"
     else
