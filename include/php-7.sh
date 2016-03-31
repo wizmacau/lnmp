@@ -63,7 +63,7 @@ make clean
 ./buildconf
 [ ! -d "$php_install_dir" ] && mkdir -p $php_install_dir
 [ "$PHP_cache" == '1' ] && PHP_cache_tmp='--enable-opcache' || PHP_cache_tmp='--disable-opcache'
-if [[ $Apache_version =~ ^[1-2]$ ]];then
+if [[ $Apache_version =~ ^[2]$ ]];then
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
 --with-apxs2=$apache_install_dir/bin/apxs $PHP_cache_tmp \
 --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm \
@@ -111,7 +111,7 @@ sed -i 's@^;cgi.fix_pathinfo.*@cgi.fix_pathinfo=0@' $php_install_dir/etc/php.ini
 sed -i 's@^short_open_tag = Off@short_open_tag = On@' $php_install_dir/etc/php.ini
 sed -i 's@^expose_php = On@expose_php = Off@' $php_install_dir/etc/php.ini
 sed -i 's@^request_order.*@request_order = "CGP"@' $php_install_dir/etc/php.ini
-sed -i 's@^;date.timezone.*@date.timezone = Asia/Shanghai@' $php_install_dir/etc/php.ini
+sed -i 's@^;date.timezone.*@date.timezone = Asia/Macao@' $php_install_dir/etc/php.ini
 sed -i 's@^post_max_size.*@post_max_size = 100M@' $php_install_dir/etc/php.ini
 sed -i 's@^upload_max_filesize.*@upload_max_filesize = 50M@' $php_install_dir/etc/php.ini
 sed -i 's@^max_execution_time.*@max_execution_time = 600@' $php_install_dir/etc/php.ini
@@ -137,7 +137,7 @@ if [ "$PHP_cache" == '1' ];then
     sed -i 's@^;opcache.optimization_level.*@;opcache.optimization_level=0@' $php_install_dir/etc/php.ini
 fi
 
-if [[ ! $Apache_version =~ ^[1-2]$ ]];then
+if [[ ! $Apache_version =~ ^[2]$ ]];then
     # php-fpm Init Script
     /bin/cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
     chmod +x /etc/init.d/php-fpm
@@ -232,7 +232,7 @@ EOF
     #[ "$Web_yn" == 'n' ] && sed -i "s@^listen =.*@listen = $IPADDR:9000@" $php_install_dir/etc/php-fpm.conf 
     service php-fpm start
 
-elif [[ $Apache_version =~ ^[1-2]$ ]];then
+elif [[ $Apache_version =~ ^[2]$ ]];then
     service httpd restart
 fi
 cd ..
