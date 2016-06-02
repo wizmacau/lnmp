@@ -19,11 +19,11 @@ if [ "$OS_BIT" == '32' ];then
     sed -i 's@^OPT=.*@OPT=-O2 -march=i686@' src/.make-settings
 fi
 
-make
+make -j ${THREAD}
 
 if [ -f "src/redis-server" ];then
     mkdir -p $redis_install_dir/{bin,etc,var}
-    /bin/cp src/{redis-benchmark,redis-check-aof,redis-check-dump,redis-cli,redis-sentinel,redis-server} $redis_install_dir/bin/
+    /bin/cp src/{redis-benchmark,redis-check-aof,redis-check-rdb,redis-cli,redis-sentinel,redis-server} $redis_install_dir/bin/
     /bin/cp redis.conf $redis_install_dir/etc/
     ln -s $redis_install_dir/bin/* /usr/local/bin/
     sed -i 's@pidfile.*@pidfile /var/run/redis.pid@' $redis_install_dir/etc/redis.conf
@@ -36,8 +36,8 @@ if [ -f "src/redis-server" ];then
     echo "${CSUCCESS}Redis-server install successfully! ${CEND}"
     cd ..
     rm -rf redis-$redis_version
-    [ "$OS" == 'CentOS' ] && { /bin/cp ../init.d/Redis-server-init-CentOS /etc/init.d/redis-server; chkconfig --add redis-server; chkconfig redis-server on; } 
-    [[ $OS =~ ^Ubuntu$|^Debian$ ]] && { useradd -M -s /sbin/nologin redis; chown -R redis:redis $redis_install_dir/var/; /bin/cp ../init.d/Redis-server-init-Ubuntu /etc/init.d/redis-server; update-rc.d redis-server defaults; } 
+    [ "$OS" == 'CentOS' ] && { /bin/cp ../init.d/Redis-server-init-CentOS /etc/init.d/redis-server; chkconfig --add redis-server; chkconfig redis-server on; }
+    [[ $OS =~ ^Ubuntu$|^Debian$ ]] && { useradd -M -s /sbin/nologin redis; chown -R redis:redis $redis_install_dir/var/; /bin/cp ../init.d/Redis-server-init-Ubuntu /etc/init.d/redis-server; update-rc.d redis-server defaults; }
     sed -i "s@/usr/local/redis@$redis_install_dir@g" /etc/init.d/redis-server
     #[ -z "`grep 'vm.overcommit_memory' /etc/sysctl.conf`" ] && echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
     #sysctl -p
@@ -67,10 +67,12 @@ if [ -e "$php_install_dir/bin/phpize" ];then
     make clean
     $php_install_dir/bin/phpize
     ./configure --with-php-config=$php_install_dir/bin/php-config
-    make && make install
+    make -j ${THREAD} && make install
     if [ -f "`$php_install_dir/bin/php-config --extension-dir`/redis.so" ];then
-        [ -z "`grep '^extension_dir' $php_install_dir/etc/php.ini`" ] && sed -i "s@extension_dir = \"ext\"@extension_dir = \"ext\"\nextension_dir = \"`$php_install_dir/bin/php-config --extension-dir`\"@" $php_install_dir/etc/php.ini
-        [ -z "`grep 'redis.so' $php_install_dir/etc/php.ini`" ] && sed -i 's@^extension_dir\(.*\)@extension_dir\1\nextension = "redis.so"@' $php_install_dir/etc/php.ini
+        cat > $php_install_dir/etc/php.d/ext-redis.ini << EOF
+[redis]
+extension=redis.so
+EOF
         echo "${CSUCCESS}PHP Redis module install successfully! ${CEND}"
         cd ..
         rm -rf redis-$redis_pecl_version

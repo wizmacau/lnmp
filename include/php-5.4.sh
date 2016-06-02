@@ -15,33 +15,34 @@ src_url=http://downloads.sourceforge.net/project/mcrypt/Libmcrypt/$libmcrypt_ver
 src_url=http://downloads.sourceforge.net/project/mhash/mhash/$mhash_version/mhash-$mhash_version.tar.gz && Download_src
 src_url=http://downloads.sourceforge.net/project/mcrypt/MCrypt/$mcrypt_version/mcrypt-$mcrypt_version.tar.gz && Download_src
 src_url=http://mirrors.linuxeye.com/oneinstack/src/fpm-race-condition.patch && Download_src
+src_url=http://mirrors.linuxeye.com/oneinstack/src/libiconv-glibc-2.16.patch && Download_src
 src_url=http://www.php.net/distributions/php-$php_4_version.tar.gz && Download_src
 
 tar xzf libiconv-$libiconv_version.tar.gz
 patch -d libiconv-$libiconv_version -p0 < libiconv-glibc-2.16.patch
 cd libiconv-$libiconv_version
 ./configure --prefix=/usr/local
-make && make install
+make -j ${THREAD} && make install
 cd ..
-rm -rf libiconv-$libiconv_version 
+rm -rf libiconv-$libiconv_version
 
 tar xzf libmcrypt-$libmcrypt_version.tar.gz
 cd libmcrypt-$libmcrypt_version
 ./configure
-make && make install
+make -j ${THREAD} && make install
 ldconfig
 cd libltdl
 ./configure --enable-ltdl-install
-make && make install
+make -j ${THREAD} && make install
 cd ../../
-rm -rf libmcrypt-$libmcrypt_version 
+rm -rf libmcrypt-$libmcrypt_version
 
 tar xzf mhash-$mhash_version.tar.gz
 cd mhash-$mhash_version
 ./configure
-make && make install
+make -j ${THREAD} && make install
 cd ..
-rm -rf mhash-$mhash_version 
+rm -rf mhash-$mhash_version
 
 echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
 ldconfig
@@ -51,20 +52,21 @@ tar xzf mcrypt-$mcrypt_version.tar.gz
 cd mcrypt-$mcrypt_version
 ldconfig
 ./configure
-make && make install
+make -j ${THREAD} && make install
 cd ..
-rm -rf mcrypt-$mcrypt_version 
+rm -rf mcrypt-$mcrypt_version
 
 id -u $run_user >/dev/null 2>&1
-[ $? -ne 0 ] && useradd -M -s /sbin/nologin $run_user 
+[ $? -ne 0 ] && useradd -M -s /sbin/nologin $run_user
 
 tar xzf php-$php_4_version.tar.gz
 patch -d php-$php_4_version -p0 < fpm-race-condition.patch
 cd php-$php_4_version
 make clean
 [ ! -d "$php_install_dir" ] && mkdir -p $php_install_dir
-if [[ $Apache_version =~ ^[1-2]$ ]];then
+if [[ $Apache_version =~ ^[1-2]$ ]] || [ -e "$apache_install_dir/bin/apxs" ];then
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
+--with-config-file-scan-dir=$php_install_dir/etc/php.d \
 --with-apxs2=$apache_install_dir/bin/apxs --disable-fileinfo \
 --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
@@ -75,6 +77,7 @@ if [[ $Apache_version =~ ^[1-2]$ ]];then
 --with-gettext --enable-zip --enable-soap --disable-ipv6 --disable-debug
 else
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
+--with-config-file-scan-dir=$php_install_dir/etc/php.d \
 --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm --disable-fileinfo \
 --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
@@ -95,13 +98,14 @@ else
     kill -9 $$
 fi
 
-[ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=$php_install_dir/bin:\$PATH" >> /etc/profile 
+[ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=$php_install_dir/bin:\$PATH" >> /etc/profile
 [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep $php_install_dir /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=$php_install_dir/bin:\1@" /etc/profile
 . /etc/profile
 
 # wget -c http://pear.php.net/go-pear.phar
 # $php_install_dir/bin/php go-pear.phar
 
+[ ! -e "$php_install_dir/etc/php.d" ] && mkdir -p $php_install_dir/etc/php.d
 /bin/cp php.ini-production $php_install_dir/etc/php.ini
 
 sed -i "s@^memory_limit.*@memory_limit = ${Memory_limit}M@" $php_install_dir/etc/php.ini
@@ -117,7 +121,7 @@ sed -i 's@^max_execution_time.*@max_execution_time = 5@' $php_install_dir/etc/ph
 sed -i 's@^disable_functions.*@disable_functions = passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,popen@' $php_install_dir/etc/php.ini
 [ -e /usr/sbin/sendmail ] && sed -i 's@^;sendmail_path.*@sendmail_path = /usr/sbin/sendmail -t -i@' $php_install_dir/etc/php.ini
 
-if [[ ! $Apache_version =~ ^[1-2]$ ]];then
+if [[ ! $Apache_version =~ ^[1-2]$ ]] && [ ! -e "$apache_install_dir/bin/apxs" ];then
     # php-fpm Init Script
     /bin/cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
     chmod +x /etc/init.d/php-fpm
@@ -136,10 +140,10 @@ if [[ ! $Apache_version =~ ^[1-2]$ ]];then
 [global]
 pid = run/php-fpm.pid
 error_log = log/php-fpm.log
-log_level = warning 
+log_level = warning
 
 emergency_restart_threshold = 30
-emergency_restart_interval = 60s 
+emergency_restart_interval = 60s
 process_control_timeout = 5s
 daemonize = yes
 
@@ -151,11 +155,11 @@ daemonize = yes
 listen = /dev/shm/php-cgi.sock
 listen.backlog = -1
 listen.allowed_clients = 127.0.0.1
-listen.owner = $run_user 
-listen.group = $run_user 
+listen.owner = $run_user
+listen.group = $run_user
 listen.mode = 0666
-user = $run_user 
-group = $run_user 
+user = $run_user
+group = $run_user
 
 pm = dynamic
 pm.max_children = 12
@@ -180,7 +184,7 @@ env[TMPDIR] = /tmp
 env[TEMP] = /tmp
 EOF
 
-    [ -d "/run/shm" -a ! -e "/dev/shm" ] && sed -i 's@/dev/shm@/run/shm@' $php_install_dir/etc/php-fpm.conf $oneinstack_dir/vhost.sh $oneinstack_dir/config/nginx.conf 
+    [ -d "/run/shm" -a ! -e "/dev/shm" ] && sed -i 's@/dev/shm@/run/shm@' $php_install_dir/etc/php-fpm.conf $oneinstack_dir/vhost.sh $oneinstack_dir/config/nginx.conf
 
     if [ $Mem -le 3000 ];then
         sed -i "s@^pm.max_children.*@pm.max_children = $(($Mem/3/20))@" $php_install_dir/etc/php-fpm.conf
@@ -209,10 +213,10 @@ EOF
         sed -i "s@^pm.max_spare_servers.*@pm.max_spare_servers = 80@" $php_install_dir/etc/php-fpm.conf
     fi
 
-    #[ "$Web_yn" == 'n' ] && sed -i "s@^listen =.*@listen = $IPADDR:9000@" $php_install_dir/etc/php-fpm.conf 
+    #[ "$Web_yn" == 'n' ] && sed -i "s@^listen =.*@listen = $IPADDR:9000@" $php_install_dir/etc/php-fpm.conf
     service php-fpm start
 
-elif [[ $Apache_version =~ ^[1-2]$ ]];then
+elif [[ $Apache_version =~ ^[1-2]$ ]] || [ -e "$apache_install_dir/bin/apxs" ];then
     service httpd restart
 fi
 cd ..
