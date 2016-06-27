@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install-JDK-1-7() {
@@ -19,7 +19,7 @@ src_url=http://mirrors.linuxeye.com/jdk/$JDK_FILE && Download_src
 
 [ "$OS" == 'CentOS' ] && [ -n "`rpm -qa | grep jdk`" ] && rpm -e `rpm -qa | grep jdk`
 
-tar xzf $JDK_FILE 
+tar xzf $JDK_FILE
 
 if [ -d "$JDK_NAME" ];then
     rm -rf $JAVA_dir; mkdir -p $JAVA_dir
@@ -29,7 +29,7 @@ if [ -d "$JDK_NAME" ];then
     [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep '$JAVA_HOME/bin' /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=\$JAVA_HOME/bin:\1@" /etc/profile
     [ -z "`grep ^'export PATH=' /etc/profile | grep '$JAVA_HOME/bin'`" ] && echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile
     . /etc/profile
-    echo "${CSUCCESS}$JDK_NAME install successfully! ${CEND}"
+    echo "${CSUCCESS}$JDK_NAME installed successfully! ${CEND}"
 else
     rm -rf $JAVA_dir
     echo "${CFAILURE}JDK install failed, Please contact the author! ${CEND}"

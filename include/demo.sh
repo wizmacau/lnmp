@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 DEMO() {
@@ -39,5 +39,6 @@ if [ -e "$php_install_dir/bin/php" ];then
     fi
 fi
 chown -R ${run_user}.$run_user $wwwroot_dir/default
+[ -e /usr/bin/systemctl ] && systemctl daemon-reload
 cd ..
 }

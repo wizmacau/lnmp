@@ -5,24 +5,24 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_Apache-2-2() {
 cd $oneinstack_dir/src
-src_url=http://mirrors.linuxeye.com/apache/httpd/httpd-$apache_2_version.tar.gz && Download_src 
+src_url=http://mirrors.linuxeye.com/apache/httpd/httpd-$apache_2_version.tar.gz && Download_src
 
 id -u $run_user >/dev/null 2>&1
-[ $? -ne 0 ] && useradd -M -s /sbin/nologin $run_user 
+[ $? -ne 0 ] && useradd -M -s /sbin/nologin $run_user
 
 tar xzf httpd-$apache_2_version.tar.gz
 cd httpd-$apache_2_version
 [ ! -d "$apache_install_dir" ] && mkdir -p $apache_install_dir
 [ "$ZendGuardLoader_yn" == 'y' -o "$ionCube_yn" == 'y' ] && MPM=prefork || MPM=worker
 ./configure --prefix=$apache_install_dir --enable-headers --enable-deflate --enable-mime-magic --enable-so --enable-rewrite --enable-ssl --with-ssl --enable-expires --enable-static-support --enable-suexec --disable-userdir --with-included-apr --with-mpm=$MPM --disable-userdir
-make && make install
+make -j ${THREAD} && make install
 if [ -e "$apache_install_dir/conf/httpd.conf" ];then
-    echo "${CSUCCESS}Apache install successfully! ${CEND}"
+    echo "${CSUCCESS}Apache installed successfully! ${CEND}"
     cd ..
     rm -rf httpd-$apache_2_version
 else
@@ -31,7 +31,7 @@ else
     kill -9 $$
 fi
 
-[ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=$apache_install_dir/bin:\$PATH" >> /etc/profile 
+[ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=$apache_install_dir/bin:\$PATH" >> /etc/profile
 [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep $apache_install_dir /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=$apache_install_dir/bin:\1@" /etc/profile
 . /etc/profile
 
@@ -44,11 +44,11 @@ chmod +x /etc/init.d/httpd
 
 sed -i "s@^User daemon@User $run_user@" $apache_install_dir/conf/httpd.conf
 sed -i "s@^Group daemon@Group $run_user@" $apache_install_dir/conf/httpd.conf
-if [ "$Nginx_version" == '3' -a ! -e "$web_install_dir/sbin/nginx" ];then
+if [ "$Nginx_version" == '4' -a ! -e "$web_install_dir/sbin/nginx" ];then
     sed -i 's/^#ServerName www.example.com:80/ServerName 0.0.0.0:80/' $apache_install_dir/conf/httpd.conf
     TMP_PORT=80
     TMP_IP=$IPADDR
-elif [ "$Nginx_version" == '1' -o "$Nginx_version" == '2' -o -e "$web_install_dir/sbin/nginx" ];then
+elif [[ $Nginx_version =~ ^[1-3]$ ]] || [ -e "$web_install_dir/sbin/nginx" ];then
     sed -i 's/^#ServerName www.example.com:80/ServerName 127.0.0.1:88/' $apache_install_dir/conf/httpd.conf
     sed -i 's@^Listen.*@Listen 127.0.0.1:88@' $apache_install_dir/conf/httpd.conf
     TMP_PORT=88
@@ -56,8 +56,6 @@ elif [ "$Nginx_version" == '1' -o "$Nginx_version" == '2' -o -e "$web_install_di
 fi
 sed -i "s@AddType\(.*\)Z@AddType\1Z\n    AddType application/x-httpd-php .php .phtml\n    AddType application/x-httpd-php-source .phps@" $apache_install_dir/conf/httpd.conf
 sed -i "s@#AddHandler cgi-script .cgi@AddHandler cgi-script .cgi .pl@" $apache_install_dir/conf/httpd.conf
-sed -i 's@^#LoadModule rewrite_module@LoadModule rewrite_module@' $apache_install_dir/conf/httpd.conf
-sed -i 's@^#LoadModule\(.*\)mod_deflate.so@LoadModule\1mod_deflate.so@' $apache_install_dir/conf/httpd.conf
 sed -i 's@DirectoryIndex index.html@DirectoryIndex index.html index.php@' $apache_install_dir/conf/httpd.conf
 sed -i "s@^DocumentRoot.*@DocumentRoot \"$wwwroot_dir/default\"@" $apache_install_dir/conf/httpd.conf
 sed -i "s@^<Directory \"$apache_install_dir/htdocs\">@<Directory \"$wwwroot_dir/default\">@" $apache_install_dir/conf/httpd.conf
@@ -85,7 +83,7 @@ NameVirtualHost *:$TMP_PORT
 <VirtualHost *:$TMP_PORT>
     ServerAdmin it@wizmacau.com
     DocumentRoot "$wwwroot_dir/default"
-    ServerName $TMP_IP 
+    ServerName $TMP_IP
     ErrorLog "$wwwlogs_dir/error_apache.log"
     CustomLog "$wwwlogs_dir/access_apache.log" common
     <Directory "$wwwroot_dir/default">
@@ -96,6 +94,12 @@ NameVirtualHost *:$TMP_PORT
         Allow from all
         DirectoryIndex index.html index.php
     </Directory>
+    <Location /server-status>
+        SetHandler server-status
+        Order Deny,Allow
+        Deny from all
+        Allow from 127.0.0.1
+    </Location>
 </VirtualHost>
 EOF
 
@@ -115,7 +119,7 @@ ServerSignature Off
 Include conf/vhost/*.conf
 EOF
 
-if [ "$Nginx_version" != '3' -o -e "$web_install_dir/sbin/nginx" ];then
+if [ "$Nginx_version" != '4' -o -e "$web_install_dir/sbin/nginx" ];then
     src_url=http://mirrors.linuxeye.com/oneinstack/src/mod_remoteip.c && Download_src
     $apache_install_dir/bin/apxs -i -c -n mod_remoteip.so mod_remoteip.c
     cat > $apache_install_dir/conf/extra/httpd-remoteip.conf << EOF
