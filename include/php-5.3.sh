@@ -152,11 +152,11 @@ sed -i 's@^;cgi.fix_pathinfo.*@cgi.fix_pathinfo=0@' $php_install_dir/etc/php.ini
 sed -i 's@^short_open_tag = Off@short_open_tag = On@' $php_install_dir/etc/php.ini
 sed -i 's@^expose_php = On@expose_php = Off@' $php_install_dir/etc/php.ini
 sed -i 's@^request_order.*@request_order = "CGP"@' $php_install_dir/etc/php.ini
-sed -i 's@^;date.timezone.*@date.timezone = Asia/Shanghai@' $php_install_dir/etc/php.ini
-sed -i 's@^post_max_size.*@post_max_size = 100M@' $php_install_dir/etc/php.ini
-sed -i 's@^upload_max_filesize.*@upload_max_filesize = 50M@' $php_install_dir/etc/php.ini
-sed -i 's@^max_execution_time.*@max_execution_time = 5@' $php_install_dir/etc/php.ini
-sed -i 's@^disable_functions.*@disable_functions = passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,popen@' $php_install_dir/etc/php.ini
+sed -i 's@^;date.timezone.*@date.timezone = Asia/Macao@' $php_install_dir/etc/php.ini
+sed -i 's@^post_max_size.*@post_max_size = 64M@' $php_install_dir/etc/php.ini
+sed -i 's@^upload_max_filesize.*@upload_max_filesize = 32M@' $php_install_dir/etc/php.ini
+sed -i 's@^max_execution_time.*@max_execution_time = 30@' $php_install_dir/etc/php.ini
+sed -i 's@^disable_functions.*@disable_functions = passthru,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,popepassthru,stream_socket_server,fsocket,popen@' $php_install_dir/etc/php.ini
 [ -e /usr/sbin/sendmail ] && sed -i 's@^;sendmail_path.*@sendmail_path = /usr/sbin/sendmail -t -i@' $php_install_dir/etc/php.ini
 
 if [[ ! $Apache_version =~ ^[1-2]$ ]] && [ ! -e "$apache_install_dir/bin/apxs" ];then

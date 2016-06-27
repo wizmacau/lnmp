@@ -256,8 +256,10 @@ fi
 [ "$apache_ssl_yn" == 'y' ] && { PATH_SSL=$apache_install_dir/conf/ssl; [ ! -d "$PATH_SSL" ] && mkdir $PATH_SSL; }
 [ "$nginx_ssl_yn" == 'y' ] && { PATH_SSL=$web_install_dir/conf/ssl; [ ! -d "$PATH_SSL" ] && mkdir $PATH_SSL; }
 
-while :; do echo
-    read -p "Please input domain(example: www.linuxeye.com): " domain
+while :
+do
+    echo
+    read -p "Please input domain(example: www.wizmacau.com): " domain
     if [ -z "`echo $domain | grep '.*\..*'`" ]; then
         echo "${CWARNING}input error! ${CEND}"
     else
