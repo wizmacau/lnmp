@@ -6,7 +6,7 @@
 #        Install Shadowsocks Server
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
@@ -15,7 +15,7 @@ printf "
 #######################################################################
 #       OneinStack for CentOS/RadHat 6+ Debian 6+ and Ubuntu 12+      #
 #                   Install Shadowsocks Server                        #
-#       For more information please visit http://oneinstack.com       #
+#       For more information please visit https://oneinstack.com      #
 #######################################################################
 "
 
@@ -38,9 +38,7 @@ Check_shadowsocks() {
 }
 
 AddUser_shadowsocks() {
-while :
-do
-    echo
+while :; do echo
     read -p "Please input password for shadowsocks: " Shadowsocks_password
     [ -n "`echo $Shadowsocks_password | grep '[+|&]'`" ] && { echo "${CWARNING}input error,not contain a plus sign (+) and & ${CEND}"; continue; }
     (( ${#Shadowsocks_password} >= 5 )) && break || echo "${CWARNING}Shadowsocks password least 5 characters! ${CEND}"
@@ -60,9 +58,7 @@ else
     Shadowsocks_Default_port=9001
 fi
 
-while :
-do
-    echo
+while :; do echo
     read -p "Please input Shadowsocks port(Default: $Shadowsocks_Default_port): " Shadowsocks_port
     [ -z "$Shadowsocks_port" ] && Shadowsocks_port=$Shadowsocks_Default_port
     if [ $Shadowsocks_port -ge 9000 >/dev/null 2>&1 -a $Shadowsocks_port -le 10000 >/dev/null 2>&1 ];then
@@ -141,7 +137,7 @@ if [ -f /usr/bin/pip ]; then
         [ ! -e /usr/bin/ssserver -a -e /usr/local/bin/ssserver ] && sed -i 's@Shadowsocks_bin=.*@Shadowsocks_bin=/usr/local/bin/ssserver@' /etc/init.d/shadowsocks
     else
         echo
-        echo "${CQUESTION}Shadowsocks-python install failed! Please visit http://oneinstack.com${CEND}"
+        echo "${CQUESTION}Shadowsocks-python install failed! Please visit https://oneinstack.com${CEND}"
         exit 1
     fi
 fi
@@ -159,16 +155,14 @@ if [ -f  /usr/local/bin/ss-server ];then
     [ "$OS" == 'CentOS' ] && { chkconfig --add shadowsocks; chkconfig shadowsocks on; }
 else
    echo
-   echo "${CQUESTION}Shadowsocks-libev install failed! Please visit http://oneinstack.com${CEND}"
+   echo "${CQUESTION}Shadowsocks-libev install failed! Please visit https://oneinstack.com${CEND}"
    exit 1
 fi
 
 }
 
 Uninstall_shadowsocks(){
-while :
-do
-    echo
+while :; do echo
     read -p "Do you want to uninstall Shadowsocks? [y/n]: " Shadowsocks_yn
     if [[ ! $Shadowsocks_yn =~ ^[y,n]$ ]];then
         echo "${CWARNING}input error! Please only input 'y' or 'n'${CEND}"

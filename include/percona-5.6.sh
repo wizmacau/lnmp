@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_Percona-5-6() {
@@ -43,7 +43,7 @@ make -j ${THREAD}
 make install
 
 if [ -d "$percona_install_dir/support-files" ];then
-    echo "${CSUCCESS}Percona install successfully! ${CEND}"
+    echo "${CSUCCESS}Percona installed successfully! ${CEND}"
     cd ..
     rm -rf percona-server-$percona_5_6_version
 else

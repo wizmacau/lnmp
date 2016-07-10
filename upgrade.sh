@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
@@ -14,13 +14,13 @@ printf "
 #######################################################################
 #       OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+      #
 #       upgrade Web,Database,PHP,Redis,phpMyAdmin for OneinStack      #
-#       For more information please visit http://oneinstack.com       #
+#       For more information please visit https://oneinstack.com      #
 #######################################################################
 "
 # get pwd
 sed -i "s@^oneinstack_dir.*@oneinstack_dir=`pwd`@" ./options.conf
 
-. ./apps.conf
+. ./versions.txt
 . ./options.conf
 . ./include/color.sh
 . ./include/check_os.sh
@@ -53,8 +53,7 @@ ${CMSG}phpmyadmin${CEND}     --->Upgrade phpMyAdmin
 }
 
 Menu(){
-while :
-do
+while :; do
     printf "
 What Are You Doing?
 \t${CMSG}1${CEND}. Upgrade Nginx/Tengine/OpenResty

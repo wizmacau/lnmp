@@ -5,19 +5,21 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_Tengine() {
 cd $oneinstack_dir/src
 src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
 src_url=http://tengine.taobao.org/download/tengine-$tengine_version.tar.gz && Download_src
+src_url=https://www.openssl.org/source/openssl-$openssl_version.tar.gz && Download_src
 
 id -u $run_user >/dev/null 2>&1
 [ $? -ne 0 ] && useradd -M -s /sbin/nologin $run_user
 
 tar xzf pcre-$pcre_version.tar.gz
 tar xzf tengine-$tengine_version.tar.gz
+tar xzf openssl-$openssl_version.tar.gz
 cd tengine-$tengine_version
 # Modify Tengine version
 #sed -i 's@TENGINE "/" TENGINE_VERSION@"Tengine/unknown"@' src/core/nginx.h
@@ -34,12 +36,12 @@ elif [ "$je_tc_malloc" == '2' ];then
 fi
 
 [ ! -d "$tengine_install_dir" ] && mkdir -p $tengine_install_dir
-./configure --prefix=$tengine_install_dir --user=$run_user --group=$run_user --with-http_stub_status_module --with-http_spdy_module --with-http_ssl_module --with-ipv6 --with-http_gzip_static_module --with-http_realip_module --with-http_flv_module --with-http_concat_module=shared --with-http_sysguard_module=shared --with-pcre=../pcre-$pcre_version --with-pcre-jit $malloc_module
+./configure --prefix=$tengine_install_dir --user=$run_user --group=$run_user --with-http_stub_status_module --with-http_spdy_module --with-http_ssl_module --with-ipv6 --with-http_gzip_static_module --with-http_realip_module --with-http_flv_module --with-http_concat_module=shared --with-http_sysguard_module=shared --with-openssl=../openssl-$openssl_version --with-pcre=../pcre-$pcre_version --with-pcre-jit $malloc_module
 make -j ${THREAD} && make install
 if [ -e "$tengine_install_dir/conf/nginx.conf" ];then
     cd ..
     rm -rf tengine-$tengine_version
-    echo "${CSUCCESS}Tengine install successfully! ${CEND}"
+    echo "${CSUCCESS}Tengine installed successfully! ${CEND}"
 else
     rm -rf $tengine_install_dir
     echo "${CFAILURE}Tengine install failed, Please Contact the author! ${CEND}"

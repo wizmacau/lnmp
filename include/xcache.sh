@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_XCache()
@@ -61,7 +61,7 @@ xcache.coverager = Off
 xcache.coverager_autostart = On
 xcache.coveragedump_directory = ""
 EOF
-    echo "${CSUCCESS}Xcache module install successfully! ${CEND}"
+    echo "${CSUCCESS}Xcache module installed successfully! ${CEND}"
     cd ..
     rm -rf xcache-$xcache_version
     [ "$Apache_version" != '1' -a "$Apache_version" != '2' ] && service php-fpm restart || service httpd restart

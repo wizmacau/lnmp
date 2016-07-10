@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_PHP-5-4() {
@@ -71,7 +71,7 @@ if [[ $Apache_version =~ ^[1-2]$ ]] || [ -e "$apache_install_dir/bin/apxs" ];the
 --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
 --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
---enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-inline-optimization \
+--enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex \
 --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl \
 --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-ftp --enable-intl --with-xsl \
 --with-gettext --enable-zip --enable-soap --disable-ipv6 --disable-debug
@@ -82,7 +82,7 @@ else
 --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
 --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
---enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex --enable-inline-optimization \
+--enable-sysvsem --enable-inline-optimization --with-curl --enable-mbregex \
 --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl \
 --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-ftp --enable-intl --with-xsl \
 --with-gettext --enable-zip --enable-soap --disable-ipv6 --disable-debug
@@ -91,7 +91,7 @@ make ZEND_EXTRA_LIBS='-liconv'
 make install
 
 if [ -e "$php_install_dir/bin/phpize" ];then
-    echo "${CSUCCESS}PHP install successfully! ${CEND}"
+    echo "${CSUCCESS}PHP installed successfully! ${CEND}"
 else
     rm -rf $php_install_dir
     echo "${CFAILURE}PHP install failed, Please Contact the author! ${CEND}"

@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_eAccelerator-0-9() {
@@ -41,7 +41,7 @@ eaccelerator.keys=disk_only
 eaccelerator.sessions=disk_only
 eaccelerator.content=disk_only
 EOF
-    echo "${CSUCCESS}Accelerator module install successfully! ${CEND}"
+    echo "${CSUCCESS}Accelerator module installed successfully! ${CEND}"
     cd ..
     [ -z "`grep 'kernel.shmmax = 67108864' /etc/sysctl.conf`" ] && echo 'kernel.shmmax = 67108864' >> /etc/sysctl.conf
     sysctl -p

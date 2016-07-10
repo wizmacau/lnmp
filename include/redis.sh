@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_redis-server() {
@@ -33,11 +33,21 @@ if [ -f "src/redis-server" ];then
     sed -i "s@^# bind 127.0.0.1@bind 127.0.0.1@" $redis_install_dir/etc/redis.conf
     redis_maxmemory=`expr $Mem / 8`000000
     [ -z "`grep ^maxmemory $redis_install_dir/etc/redis.conf`" ] && sed -i "s@maxmemory <bytes>@maxmemory <bytes>\nmaxmemory `expr $Mem / 8`000000@" $redis_install_dir/etc/redis.conf
-    echo "${CSUCCESS}Redis-server install successfully! ${CEND}"
+    echo "${CSUCCESS}Redis-server installed successfully! ${CEND}"
     cd ..
     rm -rf redis-$redis_version
-    [ "$OS" == 'CentOS' ] && { /bin/cp ../init.d/Redis-server-init-CentOS /etc/init.d/redis-server; chkconfig --add redis-server; chkconfig redis-server on; }
-    [[ $OS =~ ^Ubuntu$|^Debian$ ]] && { useradd -M -s /sbin/nologin redis; chown -R redis:redis $redis_install_dir/var/; /bin/cp ../init.d/Redis-server-init-Ubuntu /etc/init.d/redis-server; update-rc.d redis-server defaults; }
+    id -u redis >/dev/null 2>&1
+    [ $? -ne 0 ] && useradd -M -s /sbin/nologin redis
+    chown -R redis:redis $redis_install_dir/var
+    /bin/cp ../init.d/Redis-server-init /etc/init.d/redis-server
+    if [ "$OS" == 'CentOS' ];then
+        src_url=http://mirrors.linuxeye.com/oneinstack/src/start-stop-daemon.c && Download_src
+        cc start-stop-daemon.c -o /sbin/start-stop-daemon
+        chkconfig --add redis-server
+        chkconfig redis-server on
+    elif [[ $OS =~ ^Ubuntu$|^Debian$ ]];then
+        update-rc.d redis-server defaults
+    fi
     sed -i "s@/usr/local/redis@$redis_install_dir@g" /etc/init.d/redis-server
     #[ -z "`grep 'vm.overcommit_memory' /etc/sysctl.conf`" ] && echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
     #sysctl -p
@@ -54,11 +64,9 @@ Install_php-redis() {
 cd $oneinstack_dir/src
 if [ -e "$php_install_dir/bin/phpize" ];then
     if [ "`$php_install_dir/bin/php -r 'echo PHP_VERSION;' | awk -F. '{print $1}'`" == '7' ];then
-        #git clone -b php7 https://github.com/phpredis/phpredis.git
-        #cd phpredis
-        src_url=http://mirrors.linuxeye.com/oneinstack/src/phpredis-php7.tgz && Download_src
-        tar xzf phpredis-php7.tgz
-        cd phpredis-php7
+        src_url=http://pecl.php.net/get/redis-3.0.0.tgz && Download_src
+        tar xzf redis-3.0.0.tgz
+        cd redis-3.0.0
     else
         src_url=http://pecl.php.net/get/redis-$redis_pecl_version.tgz && Download_src
         tar xzf redis-$redis_pecl_version.tgz
@@ -73,7 +81,7 @@ if [ -e "$php_install_dir/bin/phpize" ];then
 [redis]
 extension=redis.so
 EOF
-        echo "${CSUCCESS}PHP Redis module install successfully! ${CEND}"
+        echo "${CSUCCESS}PHP Redis module installed successfully! ${CEND}"
         cd ..
         rm -rf redis-$redis_pecl_version
         [ "$Apache_version" != '1' -a "$Apache_version" != '2' ] && service php-fpm restart || service httpd restart

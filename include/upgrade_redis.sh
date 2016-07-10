@@ -5,17 +5,15 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Upgrade_Redis() {
 cd $oneinstack_dir/src
-[ ! -d "$redis_install_dir" ] && echo "${CWARNING}The Redis is not installed on your system! ${CEND}" && exit 1
+[ ! -d "$redis_install_dir" ] && echo "${CWARNING}Redis is not installed on your system! ${CEND}" && exit 1
 OLD_Redis_version=`$redis_install_dir/bin/redis-cli --version | awk '{print $2}'`
 echo "Current Redis Version: ${CMSG}$OLD_Redis_version${CEND}"
-while :
-do
-    echo
+while :; do echo
     read -p "Please input upgrade Redis Version(example: 3.0.5): " NEW_Redis_version
     if [ "$NEW_Redis_version" != "$OLD_Redis_version" ];then
         [ ! -e "redis-$NEW_Redis_version.tar.gz" ] && wget --no-check-certificate -c http://download.redis.io/releases/redis-$NEW_Redis_version.tar.gz > /dev/null 2>&1
@@ -26,7 +24,7 @@ do
             echo "${CWARNING}Redis version does not exist! ${CEND}"
         fi
     else
-        echo "${CWARNING}input error! The upgrade Redis version is the same as the old version${CEND}"
+        echo "${CWARNING}input error! Upgrade Redis version is the same as the old version${CEND}"
     fi
 done
 

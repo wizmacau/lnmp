@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_ZendOPcache()
@@ -33,12 +33,12 @@ opcache.fast_shutdown=1
 opcache.enable_cli=1
 ;opcache.optimization_level=0
 EOF
-    echo "${CSUCCESS}Zend OPcache module install successfully! ${CEND}"
+    echo "${CSUCCESS}PHP OPcache module installed successfully! ${CEND}"
     cd ..
     rm -rf zendopcache-$zendopcache_version
     [ "$Apache_version" != '1' -a "$Apache_version" != '2' ] && service php-fpm restart || service httpd restart
 else
-    echo "${CFAILURE}Zend OPcache module install failed, Please contact the author! ${CEND}"
+    echo "${CFAILURE}PHP OPcache module install failed, Please contact the author! ${CEND}"
 fi
 cd ..
 }

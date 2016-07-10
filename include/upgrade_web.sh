@@ -5,24 +5,24 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Upgrade_Nginx() {
 cd $oneinstack_dir/src
-[ ! -e "$nginx_install_dir/sbin/nginx" ] && echo "${CWARNING}The Nginx is not installed on your system! ${CEND}" && exit 1
+[ ! -e "$nginx_install_dir/sbin/nginx" ] && echo "${CWARNING}Nginx is not installed on your system! ${CEND}" && exit 1
 OLD_Nginx_version_tmp=`$nginx_install_dir/sbin/nginx -v 2>&1`
 OLD_Nginx_version=${OLD_Nginx_version_tmp##*/}
 echo
 echo "Current Nginx Version: ${CMSG}$OLD_Nginx_version${CEND}"
-while :
-do
-    echo
+while :; do echo
     read -p "Please input upgrade Nginx Version(example: 1.9.15): " NEW_Nginx_version
     if [ "$NEW_Nginx_version" != "$OLD_Nginx_version" ];then
         [ ! -e "nginx-$NEW_Nginx_version.tar.gz" ] && wget --no-check-certificate -c http://nginx.org/download/nginx-$NEW_Nginx_version.tar.gz > /dev/null 2>&1
         if [ -e "nginx-$NEW_Nginx_version.tar.gz" ];then
+            src_url=https://www.openssl.org/source/openssl-$openssl_version.tar.gz && Download_src
             src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
+            tar xzf openssl-$openssl_version.tar.gz
             tar xzf pcre-$pcre_version.tar.gz
             echo "Download [${CMSG}nginx-$NEW_Nginx_version.tar.gz${CEND}] successfully! "
             break
@@ -30,7 +30,7 @@ do
             echo "${CWARNING}Nginx version does not exist! ${CEND}"
         fi
     else
-        echo "${CWARNING}input error! The upgrade Nginx version is the same as the old version${CEND}"
+        echo "${CWARNING}input error! Upgrade Nginx version is the same as the old version${CEND}"
     fi
 done
 
@@ -64,19 +64,19 @@ cd ..
 
 Upgrade_Tengine() {
 cd $oneinstack_dir/src
-[ ! -e "$tengine_install_dir/sbin/nginx" ] && echo "${CWARNING}The Tengine is not installed on your system! ${CEND}" && exit 1
+[ ! -e "$tengine_install_dir/sbin/nginx" ] && echo "${CWARNING}Tengine is not installed on your system! ${CEND}" && exit 1
 OLD_Tengine_version_tmp=`$tengine_install_dir/sbin/nginx -v 2>&1`
 OLD_Tengine_version="`echo ${OLD_Tengine_version_tmp#*/} | awk '{print $1}'`"
 echo
 echo "Current Tengine Version: ${CMSG}$OLD_Tengine_version${CEND}"
-while :
-do
-    echo
+while :; do echo
     read -p "Please input upgrade Tengine Version(example: 2.1.15): " NEW_Tengine_version
     if [ "$NEW_Tengine_version" != "$OLD_Tengine_version" ];then
         [ ! -e "tengine-$NEW_Tengine_version.tar.gz" ] && wget --no-check-certificate -c http://tengine.taobao.org/download/tengine-$NEW_Tengine_version.tar.gz > /dev/null 2>&1
         if [ -e "tengine-$NEW_Tengine_version.tar.gz" ];then
+            src_url=https://www.openssl.org/source/openssl-$openssl_version.tar.gz && Download_src
             src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
+            tar xzf openssl-$openssl_version.tar.gz
             tar xzf pcre-$pcre_version.tar.gz
             echo "Download [${CMSG}tengine-$NEW_Tengine_version.tar.gz${CEND}] successfully! "
             break
@@ -84,7 +84,7 @@ do
             echo "${CWARNING}Tengine version does not exist! ${CEND}"
         fi
     else
-        echo "${CWARNING}input error! The upgrade Tengine version is the same as the old version${CEND}"
+        echo "${CWARNING}input error! Upgrade Tengine version is the same as the old version${CEND}"
     fi
 done
 
@@ -123,19 +123,19 @@ cd ..
 
 Upgrade_OpenResty() {
 cd $oneinstack_dir/src
-[ ! -e "$openresty_install_dir/nginx/sbin/nginx" ] && echo "${CWARNING}The OpenResty is not installed on your system! ${CEND}" && exit 1
+[ ! -e "$openresty_install_dir/nginx/sbin/nginx" ] && echo "${CWARNING}OpenResty is not installed on your system! ${CEND}" && exit 1
 OLD_OpenResty_version_tmp=`$openresty_install_dir/nginx/sbin/nginx -v 2>&1`
 OLD_OpenResty_version="`echo ${OLD_OpenResty_version_tmp#*/} | awk '{print $1}'`"
 echo
 echo "Current OpenResty Version: ${CMSG}$OLD_OpenResty_version${CEND}"
-while :
-do
-    echo
+while :; do echo
     read -p "Please input upgrade OpenResty Version(example: 1.9.7.19): " NEW_OpenResty_version
     if [ "$NEW_OpenResty_version" != "$OLD_OpenResty_version" ];then
         [ ! -e "openresty-$NEW_OpenResty_version.tar.gz" ] && wget --no-check-certificate -c https://openresty.org/download/openresty-$NEW_OpenResty_version.tar.gz > /dev/null 2>&1
         if [ -e "openresty-$NEW_OpenResty_version.tar.gz" ];then
+            src_url=https://www.openssl.org/source/openssl-$openssl_version.tar.gz && Download_src
             src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
+            tar xzf openssl-$openssl_version.tar.gz
             tar xzf pcre-$pcre_version.tar.gz
             echo "Download [${CMSG}openresty-$NEW_OpenResty_version.tar.gz${CEND}] successfully! "
             break
@@ -143,7 +143,7 @@ do
             echo "${CWARNING}OpenResty version does not exist! ${CEND}"
         fi
     else
-        echo "${CWARNING}input error! The upgrade OpenResty version is the same as the old version${CEND}"
+        echo "${CWARNING}input error! Upgrade OpenResty version is the same as the old version${CEND}"
     fi
 done
 
@@ -161,7 +161,7 @@ if [ -e "openresty-$NEW_OpenResty_version.tar.gz" ];then
     rm -rf $$
     [ -n "`echo $openresty_configure_arguments | grep jemalloc`"] && malloc_module="--with-ld-opt='-ljemalloc'"
     [ -n "`echo $openresty_configure_arguments | grep perftools`" ] && malloc_module='--with-google_perftools_module'
-    ./configure --prefix=$openresty_install_dir --user=$run_user --group=$run_user --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-ipv6 --with-http_gzip_static_module --with-http_realip_module --with-http_flv_module --with-pcre=../pcre-$pcre_version --with-pcre-jit $malloc_module
+    ./configure --prefix=$openresty_install_dir --user=$run_user --group=$run_user --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-ipv6 --with-http_gzip_static_module --with-http_realip_module --with-http_flv_module --with-openssl=../openssl-$openssl_version --with-pcre=../pcre-$pcre_version --with-pcre-jit $malloc_module
     make -j ${THREAD}
     if [ -f "build/nginx-$openresty_version_tmp/objs/nginx" ];then
         /bin/mv $openresty_install_dir/nginx/sbin/nginx $openresty_install_dir/nginx/sbin/nginx$(date +%m%d)

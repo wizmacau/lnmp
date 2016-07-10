@@ -5,19 +5,21 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_Nginx() {
 cd $oneinstack_dir/src
 src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
 src_url=http://nginx.org/download/nginx-$nginx_version.tar.gz && Download_src
+src_url=https://www.openssl.org/source/openssl-$openssl_version.tar.gz && Download_src
 
 id -u $run_user >/dev/null 2>&1
 [ $? -ne 0 ] && useradd -M -s /sbin/nologin $run_user
 
 tar xzf pcre-$pcre_version.tar.gz
 tar xzf nginx-$nginx_version.tar.gz
+tar xzf openssl-$openssl_version.tar.gz
 cd nginx-$nginx_version
 # Modify Nginx version
 #sed -i 's@#define NGINX_VERSION.*$@#define NGINX_VERSION      "1.2"@' src/core/nginx.h
@@ -36,12 +38,12 @@ elif [ "$je_tc_malloc" == '2' ];then
 fi
 
 [ ! -d "$nginx_install_dir" ] && mkdir -p $nginx_install_dir
-./configure --prefix=$nginx_install_dir --user=$run_user --group=$run_user --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-ipv6 --with-http_gzip_static_module --with-http_realip_module --with-http_flv_module --with-pcre=../pcre-$pcre_version --with-pcre-jit $malloc_module
+./configure --prefix=$nginx_install_dir --user=$run_user --group=$run_user --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-ipv6 --with-http_gzip_static_module --with-http_realip_module --with-http_flv_module --with-openssl=../openssl-$openssl_version --with-pcre=../pcre-$pcre_version --with-pcre-jit $malloc_module
 make -j ${THREAD} && make install
 if [ -e "$nginx_install_dir/conf/nginx.conf" ];then
     cd ..
     rm -rf nginx-$nginx_version
-    echo "${CSUCCESS}Nginx install successfully! ${CEND}"
+    echo "${CSUCCESS}Nginx installed successfully! ${CEND}"
 else
     rm -rf $nginx_install_dir
     echo "${CFAILURE}Nginx install failed, Please Contact the author! ${CEND}"

@@ -5,19 +5,16 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Upgrade_DB() {
 cd $oneinstack_dir/src
-[ ! -e "$db_install_dir/bin/mysql" ] && echo "${CWARNING}The MySQL/MariaDB/Percona is not installed on your system! ${CEND}" && exit 1
+[ ! -e "$db_install_dir/bin/mysql" ] && echo "${CWARNING}MySQL/MariaDB/Percona is not installed on your system! ${CEND}" && exit 1
 OLD_DB_version_tmp=`$db_install_dir/bin/mysql -V | awk '{print $5}' | awk -F, '{print $1}'`
 DB_tmp=`echo $OLD_DB_version_tmp | awk -F'-' '{print $2}'`
 if [ "$DB_tmp" == 'MariaDB' ];then
     [ "$IPADDR_STATE"x == "CN"x ] && DOWN_ADDR=http://mirrors.aliyun.com/mariadb || DOWN_ADDR=https://downloads.mariadb.org/f
-    LIBC_VERSION=`getconf -a | grep GNU_LIBC_VERSION | awk '{print $NF}'`
-    LIBC_YN=`echo "$LIBC_VERSION < 2.14" | bc`
-    [ $LIBC_YN == '1' ] && GLIBC_FLAG=linux || GLIBC_FLAG=linux-glibc_214
     DB=MariaDB
     OLD_DB_version=`echo $OLD_DB_version_tmp | awk -F'-' '{print $1}'`
 elif [ -n "$DB_tmp" -a "$DB_tmp" != 'MariaDB' ];then
@@ -30,8 +27,7 @@ else
 fi
 
 #backup
-while :
-do
+while :; do
     $db_install_dir/bin/mysql -uroot -p${dbrootpwd} -e "quit" >/dev/null 2>&1
     if [ $? -eq 0 ];then
         break
@@ -61,9 +57,7 @@ echo "Current $DB Version: ${CMSG}$OLD_DB_version${CEND}"
 [ -e /usr/local/lib/libtcmalloc.so ] && { je_tc_malloc=2; EXE_LINKER="-DCMAKE_EXE_LINKER_FLAGS='-ltcmalloc'"; }
 [ -e /usr/local/lib/libjemalloc.so -a -e /usr/local/lib/libtcmalloc.so ] && { je_tc_malloc=1; EXE_LINKER="-DCMAKE_EXE_LINKER_FLAGS='-ljemalloc'"; }
 
-while :
-do
-    echo
+while :; do echo
     read -p "Please input upgrade $DB Version(example: $OLD_DB_version): " NEW_DB_version
     if [ `echo $NEW_DB_version | awk -F. '{print $1"."$2}'` == `echo $OLD_DB_version | awk -F. '{print $1"."$2}'` ]; then
         if [ "$DB" == 'MariaDB' ];then

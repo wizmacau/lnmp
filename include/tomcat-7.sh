@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_tomcat-7() {
@@ -111,7 +111,7 @@ EOF
         sed -i "s@^TOMCAT_USER=.*@TOMCAT_USER=$run_user@" /etc/init.d/tomcat
         [ "$OS" == 'CentOS' ] && { chkconfig --add tomcat; chkconfig tomcat on; }
         [[ $OS =~ ^Ubuntu$|^Debian$ ]] && update-rc.d tomcat defaults
-        echo "${CSUCCESS}Tomcat install successfully! ${CEND}"
+        echo "${CSUCCESS}Tomcat installed successfully! ${CEND}"
     fi
 else
     rm -rf $tomcat_install_dir

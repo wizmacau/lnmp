@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
@@ -14,7 +14,7 @@ printf "
 #######################################################################
 #       OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+      #
 #              Reset Database root password for OneinStack            #
-#       For more information please visit http://oneinstack.com       #
+#       For more information please visit https://oneinstack.com      #
 #######################################################################
 "
 
@@ -27,10 +27,8 @@ printf "
 
 Reset_db_root_password()
 {
-[ ! -d "$db_install_dir" ] && { echo "${CFAILURE}The Database is not installed on your system! ${CEND}"; exit 1; }
-while :
-do
-    echo
+[ ! -d "$db_install_dir" ] && { echo "${CFAILURE}Database is not installed on your system! ${CEND}"; exit 1; }
+while :; do echo
     read -p "Please input the root password of database: " New_dbrootpwd
     [ -n "`echo $New_dbrootpwd | grep '[+|&]'`" ] && { echo "${CWARNING}input error,not contain a plus sign (+) and &${CEND}"; continue; }
     (( ${#New_dbrootpwd} >= 5 )) && break || echo "${CWARNING}database root password least 5 characters! ${CEND}"

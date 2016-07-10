@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_MySQL-5-5() {
@@ -17,7 +17,15 @@ else
     [ "$IPADDR_STATE"x == "CN"x ] && DOWN_ADDR_MYSQL=http://mirrors.sohu.com/mysql/MySQL-5.5 || DOWN_ADDR_MYSQL=http://cdn.mysql.com/Downloads/MySQL-5.5
 fi
 
-src_url=$DOWN_ADDR_MYSQL/mysql-${mysql_5_5_version}-linux2.6-${SYS_BIT_b}.tar.gz && Download_src
+FILE_NAME=mysql-${mysql_5_5_version}-linux2.6-${SYS_BIT_b}.tar.gz
+src_url=$DOWN_ADDR_MYSQL/$FILE_NAME && Download_src
+src_url=$DOWN_ADDR_MYSQL/$FILE_NAME.md5 && Download_src
+MYSQL_TAR_MD5=`awk '{print $1}' $FILE_NAME.md5`
+while [ "`md5sum $FILE_NAME | awk '{print $1}'`" != "$MYSQL_TAR_MD5" ];
+do
+    wget -c --no-check-certificate $DOWN_ADDR_MYSQL/$FILE_NAME;sleep 1
+    [ "`md5sum $FILE_NAME | awk '{print $1}'`" == "$MYSQL_TAR_MD5" ] && break || continue
+done
 
 id -u mysql >/dev/null 2>&1
 [ $? -ne 0 ] && useradd -M -s /sbin/nologin mysql
@@ -34,7 +42,7 @@ elif [ "$je_tc_malloc" == '2' ];then
 fi
 
 if [ -d "$mysql_install_dir/support-files" ];then
-    echo "${CSUCCESS}MySQL install successfully! ${CEND}"
+    echo "${CSUCCESS}MySQL installed successfully! ${CEND}"
     cd ..
     rm -rf mysql-$mysql_5_6_version
 else

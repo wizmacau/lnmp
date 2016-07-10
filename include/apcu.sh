@@ -5,7 +5,7 @@
 # Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
 #
 # Project home page:
-#       http://oneinstack.com
+#       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
 Install_APCU() {
@@ -29,7 +29,7 @@ apc.enable_cli=1
 EOF
     [ "$Apache_version" != '1' -a "$Apache_version" != '2' ] && service php-fpm restart || service httpd restart
     /bin/cp apc.php $wwwroot_dir/default
-    echo "${CSUCCESS}APCU module install successfully! ${CEND}"
+    echo "${CSUCCESS}APCU module installed successfully! ${CEND}"
     cd ..
     rm -rf apcu-$apcu_version
 else
