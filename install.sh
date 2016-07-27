@@ -34,7 +34,8 @@ sed -i "s@^oneinstack_dir.*@oneinstack_dir=`pwd`@" ./options.conf
 # get the IP information
 IPADDR=`./include/get_ipaddr.py`
 PUBLIC_IPADDR=`./include/get_public_ipaddr.py`
-[ "`./include/get_ipaddr_state.py $PUBLIC_IPADDR`" == '\u4e2d\u56fd' ] && IPADDR_STATE=CN
+IPADDR_COUNTRY=`./include/get_ipaddr_state.py country_id $PUBLIC_IPADDR`
+[ "`./include/get_ipaddr_state.py isp $PUBLIC_IPADDR`" == '\u963f\u91cc\u4e91' ] && IPADDR_ISP=aliyun
 
 mkdir -p $wwwroot_dir/default $wwwlogs_dir
 [ -d /data ] && chmod 755 /data
@@ -439,7 +440,7 @@ while :; do echo
     else
         if [ "$HHVM_yn" == 'y' ];then
             [ -e "/usr/bin/hhvm" ] && { echo "${CWARNING}HHVM already installed! ${CEND}"; HHVM_yn=Other; break; }
-            if [ "$OS" == 'CentOS' -a "$OS_BIT" == '64' ] && [ -n "`grep -E ' 7\.| 6\.5| 6\.6| 6\.7' /etc/redhat-release`" ];then
+            if [ "$OS" == 'CentOS' -a "$OS_BIT" == '64' ] && [ -n "`grep -E ' 7\.| 6\.[5-9]' /etc/redhat-release`" ];then
                 break
             else
                 echo
