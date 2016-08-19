@@ -21,10 +21,11 @@ elif [ -n "`grep Deepin /etc/issue`" -o "`lsb_release -is 2>/dev/null`" == 'Deep
     OS=Debian
     [ ! -e "`which lsb_release`" ] && { apt-get -y update; apt-get -y install lsb-release; clear; }
     Debian_version=`lsb_release -sr | awk -F. '{print $1}'`
-elif [ -n "`grep Ubuntu /etc/issue`" -o "`lsb_release -is 2>/dev/null`" == 'Ubuntu' ];then
+elif [ -n "`grep Ubuntu /etc/issue`" -o "`lsb_release -is 2>/dev/null`" == 'Ubuntu' -o -n "`grep 'Linux Mint' /etc/issue`" ];then
     OS=Ubuntu
     [ ! -e "`which lsb_release`" ] && { apt-get -y update; apt-get -y install lsb-release; clear; }
     Ubuntu_version=`lsb_release -sr | awk -F. '{print $1}'`
+    [ -n "`grep 'Linux Mint 18' /etc/issue`" ] && Ubuntu_version=16
 else
     echo "${CFAILURE}Does not support this OS, Please contact the author! ${CEND}"
     kill -9 $$
@@ -39,5 +40,8 @@ else
     SYS_BIG_FLAG=i586
     SYS_BIT_a=x86;SYS_BIT_b=i686;
 fi
+
+LIBC_YN=$(awk -v A=`getconf -a | grep GNU_LIBC_VERSION | awk '{print $NF}'` -v B=2.14 'BEGIN{print(A>=B)?"0":"1"}')
+[ $LIBC_YN == '0' ] && GLIBC_FLAG=linux-glibc_214 || GLIBC_FLAG=linux
 
 THREAD=$(grep 'processor' /proc/cpuinfo | sort -u | wc -l)

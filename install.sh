@@ -31,11 +31,6 @@ sed -i "s@^oneinstack_dir.*@oneinstack_dir=`pwd`@" ./options.conf
 # Check if user is root
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 
-# get the IP information
-IPADDR=`./include/get_ipaddr.py`
-PUBLIC_IPADDR=`./include/get_public_ipaddr.py`
-[ "`./include/get_ipaddr_state.py $PUBLIC_IPADDR`" == '\u4e2d\u56fd' ] && IPADDR_STATE=CN
-
 mkdir -p $wwwroot_dir/default $wwwlogs_dir
 [ -d /data ] && chmod 755 /data
 
@@ -439,7 +434,7 @@ while :; do echo
     else
         if [ "$HHVM_yn" == 'y' ];then
             [ -e "/usr/bin/hhvm" ] && { echo "${CWARNING}HHVM already installed! ${CEND}"; HHVM_yn=Other; break; }
-            if [ "$OS" == 'CentOS' -a "$OS_BIT" == '64' ] && [ -n "`grep -E ' 7\.| 6\.5| 6\.6| 6\.7' /etc/redhat-release`" ];then
+            if [ "$OS" == 'CentOS' -a "$OS_BIT" == '64' ] && [ -n "`grep -E ' 7\.| 6\.[5-9]' /etc/redhat-release`" ];then
                 break
             else
                 echo
@@ -452,6 +447,13 @@ while :; do echo
         break
     fi
 done
+
+# get the IP information
+IPADDR=`./include/get_ipaddr.py`
+PUBLIC_IPADDR=`./include/get_public_ipaddr.py`
+IPADDR_COUNTRY_ISP=`./include/get_ipaddr_state.py $PUBLIC_IPADDR`
+IPADDR_COUNTRY=`echo $IPADDR_COUNTRY_ISP | awk '{print $1}'`
+[ "`echo $IPADDR_COUNTRY_ISP | awk '{print $2}'`"x == '1000323'x ] && IPADDR_ISP=aliyun
 
 # init
 . ./include/memory.sh
@@ -468,10 +470,12 @@ fi
 if [ "$je_tc_malloc_yn" == 'y' -a "$je_tc_malloc" == '1' -a ! -e "/usr/local/lib/libjemalloc.so" ];then
     . include/jemalloc.sh
     Install_jemalloc | tee -a $oneinstack_dir/install.log
-elif [ "$DB_version" == '4' -a ! -e "/usr/local/lib/libjemalloc.so" ];then
+fi
+if [ "$DB_version" == '4' -a ! -e "/usr/local/lib/libjemalloc.so" ];then
     . include/jemalloc.sh
     Install_jemalloc | tee -a $oneinstack_dir/install.log
-elif [ "$je_tc_malloc_yn" == 'y' -a "$je_tc_malloc" == '2' -a ! -e "/usr/local/lib/libtcmalloc.so" ];then
+fi
+if [ "$je_tc_malloc_yn" == 'y' -a "$je_tc_malloc" == '2' -a ! -e "/usr/local/lib/libtcmalloc.so" ];then
     . include/tcmalloc.sh
     Install_tcmalloc | tee -a $oneinstack_dir/install.log
 fi
