@@ -14,14 +14,14 @@ cd $oneinstack_dir/src
 OLD_DB_version_tmp=`$db_install_dir/bin/mysql -V | awk '{print $5}' | awk -F, '{print $1}'`
 DB_tmp=`echo $OLD_DB_version_tmp | awk -F'-' '{print $2}'`
 if [ "$DB_tmp" == 'MariaDB' ];then
-    [ "$IPADDR_COUNTRY"x == "CN"x ] && DOWN_ADDR=http://mirrors.aliyun.com/mariadb || DOWN_ADDR=https://downloads.mariadb.org/f
+    [ "$IPADDR_COUNTRY"x == "CN"x ] && DOWN_ADDR=https://mirrors.tuna.tsinghua.edu.cn/mariadb || DOWN_ADDR=https://downloads.mariadb.org/f
     DB=MariaDB
     OLD_DB_version=`echo $OLD_DB_version_tmp | awk -F'-' '{print $1}'`
 elif [ -n "$DB_tmp" -a "$DB_tmp" != 'MariaDB' ];then
     DB=Percona
     OLD_DB_version=$OLD_DB_version_tmp
 else
-    [ "$IPADDR_COUNTRY"x == "CN"x ] && DOWN_ADDR=http://mirrors.sohu.com/mysql || DOWN_ADDR=http://cdn.mysql.com/Downloads
+    [ "$IPADDR_COUNTRY"x == "CN"x ] && DOWN_ADDR=https://mirrors.tuna.tsinghua.edu.cn/mysql/downloads || DOWN_ADDR=http://cdn.mysql.com/Downloads
     DB=MySQL
     OLD_DB_version=$OLD_DB_version_tmp
 fi
@@ -59,7 +59,7 @@ echo "Current $DB Version: ${CMSG}$OLD_DB_version${CEND}"
 
 while :; do echo
     read -p "Please input upgrade $DB Version(example: $OLD_DB_version): " NEW_DB_version
-    if [ `echo $NEW_DB_version | awk -F. '{print $1"."$2}'` == `echo $OLD_DB_version | awk -F. '{print $1"."$2}'` ]; then
+    if [ `echo $NEW_DB_version | awk -F. '{print $1"."$2}'` == `echo $OLD_DB_version | awk -F. '{print $1"."$2}'` ];then
         if [ "$DB" == 'MariaDB' ];then
             DB_name=mariadb-${NEW_DB_version}-${GLIBC_FLAG}-${SYS_BIT_b}
             DB_URL=$DOWN_ADDR/mariadb-${NEW_DB_version}/bintar-${GLIBC_FLAG}-$SYS_BIT_a/$DB_name.tar.gz

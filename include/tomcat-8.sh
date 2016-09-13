@@ -12,9 +12,6 @@ Install_tomcat-8() {
 cd $oneinstack_dir/src
 . /etc/profile
 
-src_url=http://mirrors.linuxeye.com/apache/tomcat/v$tomcat_8_version/apache-tomcat-$tomcat_8_version.tar.gz && Download_src
-src_url=http://mirrors.linuxeye.com/apache/tomcat/v$tomcat_8_version/catalina-jmx-remote.jar && Download_src
-
 id -u $run_user >/dev/null 2>&1
 [ $? -ne 0 ] && useradd -M -s /bin/bash $run_user || { [ -z "`grep ^$run_user /etc/passwd | grep '/bin/bash'`" ] && usermod -s /bin/bash $run_user; }
 
@@ -45,7 +42,7 @@ if [ -e "$tomcat_install_dir/conf/server.xml" ];then
     if [ -d "/usr/local/apr/lib" ];then
         [ $Mem -le 768 ] && Xms_Mem=`expr $Mem / 3` || Xms_Mem=256
         cat > $tomcat_install_dir/bin/setenv.sh << EOF
-JAVA_OPTS='-Djava.security.egd=file:/dev/./urandom -server -Xms${Xms_Mem}m -Xmx`expr $Mem / 2`m'
+JAVA_OPTS='-Djava.security.egd=file:/dev/./urandom -server -Xms${Xms_Mem}m -Xmx`expr $Mem / 2`m -Dfile.encoding=UTF-8'
 CATALINA_OPTS="-Djava.library.path=/usr/local/apr/lib"
 # -Djava.rmi.server.hostname=$IPADDR
 # -Dcom.sun.management.jmxremote.password.file=\$CATALINA_BASE/conf/jmxremote.password

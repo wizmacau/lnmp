@@ -10,10 +10,6 @@
 
 Install_Apache-2-4() {
 cd $oneinstack_dir/src
-src_url=http://mirrors.linuxeye.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
-src_url=http://archive.apache.org/dist/apr/apr-$apr_version.tar.gz && Download_src
-src_url=http://archive.apache.org/dist/apr/apr-util-$apr_util_version.tar.gz && Download_src
-src_url=http://mirrors.linuxeye.com/apache/httpd/httpd-$apache_4_version.tar.gz && Download_src
 
 tar xzf pcre-$pcre_version.tar.gz
 cd pcre-$pcre_version
@@ -144,6 +140,7 @@ EOF
     sed -i "s@Include conf/extra/httpd-mpm.conf@Include conf/extra/httpd-mpm.conf\nInclude conf/extra/httpd-remoteip.conf@" $apache_install_dir/conf/httpd.conf
     sed -i "s@LogFormat \"%h %l@LogFormat \"%h %a %l@g" $apache_install_dir/conf/httpd.conf
 fi
+ldconfig
 service httpd start
 cd ..
 }
