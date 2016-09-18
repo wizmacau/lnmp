@@ -174,8 +174,8 @@ service sshd restart
 # install tmux
 if [ ! -e "`which tmux`" ];then
     cd src
-    src_url=http://mirrors.linuxeye.com/oneinstack/src/libevent-2.0.22-stable.tar.gz && Download_src
-    src_url=http://mirrors.linuxeye.com/oneinstack/src/tmux-2.2.tar.gz && Download_src
+    src_url=http://mirror.wizmacau.com/oneinstack/src/libevent-2.0.22-stable.tar.gz && Download_src
+    src_url=http://mirror.wizmacau.com/oneinstack/src/tmux-2.2.tar.gz && Download_src
     tar xzf libevent-2.0.22-stable.tar.gz
     cd libevent-2.0.22-stable
     ./configure
@@ -198,7 +198,7 @@ fi
 # install htop
 if [ ! -e "`which htop`" ];then
     cd src
-    src_url=http://hisham.hm/htop/releases/2.0.2/htop-2.0.2.tar.gz && Download_src
+    src_url=http://mirror.wizmacau.com/oneinstack/src/htop-2.0.2.tar.gz && Download_src
     tar xzf htop-2.0.2.tar.gz
     cd htop-2.0.2
     ./configure
