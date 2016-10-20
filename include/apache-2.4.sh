@@ -10,10 +10,6 @@
 
 Install_Apache-2-4() {
 cd $oneinstack_dir/src
-src_url=http://mirror.wizmacau.com/oneinstack/src/pcre-$pcre_version.tar.gz && Download_src
-src_url=http://archive.apache.org/dist/apr/apr-$apr_version.tar.gz && Download_src 
-src_url=http://archive.apache.org/dist/apr/apr-util-$apr_util_version.tar.gz && Download_src
-src_url=http://mirror.wizmacau.com/apache/httpd/httpd-$apache_4_version.tar.gz && Download_src 
 
 tar xzf pcre-$pcre_version.tar.gz
 cd pcre-$pcre_version
@@ -96,26 +92,26 @@ EOF
 mkdir $apache_install_dir/conf/vhost
 cat >> $apache_install_dir/conf/vhost/0.conf << EOF
 <VirtualHost *:$TMP_PORT>
-    ServerAdmin it@wizmacau.com
+    ServerAdmin admin@linuxeye.com
     DocumentRoot "$wwwroot_dir/default"
     ServerName $TMP_IP
     ErrorLog "$wwwlogs_dir/error_apache.log"
     CustomLog "$wwwlogs_dir/access_apache.log" common
-    <Directory "$wwwroot_dir/default">
-        SetOutputFilter DEFLATE
-        Options FollowSymLinks ExecCGI
-        Require all granted
-        AllowOverride All
-        Order allow,deny
-        Allow from all
-        DirectoryIndex index.html index.php index.html
-    </Directory>
-    <Location /server-status>
-        SetHandler server-status
-        Order Deny,Allow
-        Deny from all
-        Allow from 127.0.0.1
-    </Location>
+<Directory "$wwwroot_dir/default">
+    SetOutputFilter DEFLATE
+    Options FollowSymLinks ExecCGI
+    Require all granted
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    DirectoryIndex index.html index.php
+</Directory>
+<Location /server-status>
+    SetHandler server-status
+    Order Deny,Allow
+    Deny from all
+    Allow from 127.0.0.1
+</Location>
 </VirtualHost>
 EOF
 
