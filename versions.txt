@@ -1,6 +1,6 @@
 # newest software version
 # Web
-nginx_version=1.10.1
+nginx_version=1.10.2
 tengine_version=2.1.1
 openresty_version=1.11.2.1
 openssl_version=1.0.2j
@@ -34,7 +34,7 @@ jdk_7_version=1.7.0_80
 jdk_6_version=1.6.0_45
 
 # PHP
-php_7_version=7.0.11
+php_7_version=7.0.12
 php_6_version=5.6.26
 php_5_version=5.5.38
 php_4_version=5.4.45
@@ -61,7 +61,7 @@ eaccelerator_version=0.9.6.1
 pureftpd_version=1.0.43
 
 # Redis
-redis_version=3.2.4
+redis_version=3.2.5
 redis_pecl_for_php7_version=3.0.0
 redis_pecl_version=2.2.8
 
@@ -72,7 +72,7 @@ memcached_pecl_version=2.2.0
 memcache_pecl_version=3.0.8
 
 # phpMyadmin
-phpMyAdmin_version=4.4.15.8
+phpMyAdmin_version=4.6.4
 
 # jemalloc
 jemalloc_version=4.2.1

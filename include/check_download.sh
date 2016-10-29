@@ -461,7 +461,8 @@ checkDownload() {
       src_url=http://www.php.net/distributions/php-${php_6_version}.tar.gz && Download_src
     fi
     if [ "${PHP_version}" == "5" ]; then
-      src_url=http://www.php.net/distributions/php-${php_7_version}.tar.gz && Download_src
+      #src_url=http://www.php.net/distributions/php-${php_7_version}.tar.gz && Download_src
+      src_url=http://hk1.php.net/get/php-${php_7_version}.tar.gz/from/this/mirror && Download_src
     fi
   fi
     
