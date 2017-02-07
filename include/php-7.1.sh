@@ -8,7 +8,7 @@
 #       https://oneinstack.com
 #       https://github.com/lj2007331/oneinstack
 
-Install_PHP70() {
+Install_PHP71() {
   pushd ${oneinstack_dir}/src
   
   tar xzf libiconv-$libiconv_version.tar.gz
@@ -59,8 +59,8 @@ Install_PHP70() {
   id -u $run_user >/dev/null 2>&1
   [ $? -ne 0 ] && useradd -M -s /sbin/nologin $run_user
   
-  tar xzf php-$php70_version.tar.gz
-  pushd php-$php70_version
+  tar xzf php-$php71_version.tar.gz
+  pushd php-$php71_version
   make clean
   ./buildconf
   [ ! -d "$php_install_dir" ] && mkdir -p $php_install_dir
@@ -68,8 +68,7 @@ Install_PHP70() {
   if [[ $Apache_version =~ ^[1-2]$ ]] || [ -e "$apache_install_dir/bin/apxs" ]; then
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
     --with-config-file-scan-dir=$php_install_dir/etc/php.d \
-    --with-apxs2=$apache_install_dir/bin/apxs $PHP_cache_tmp \
-    --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm \
+    --with-apxs2=$apache_install_dir/bin/apxs $PHP_cache_tmp --disable-fileinfo \
     --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
     --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
     --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
@@ -80,7 +79,7 @@ Install_PHP70() {
   else
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
     --with-config-file-scan-dir=$php_install_dir/etc/php.d \
-    --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm $PHP_cache_tmp \
+    --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm $PHP_cache_tmp --disable-fileinfo \
     --enable-mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
     --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
     --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
@@ -116,12 +115,12 @@ Install_PHP70() {
   sed -i 's@^short_open_tag = Off@short_open_tag = On@' $php_install_dir/etc/php.ini
   sed -i 's@^expose_php = On@expose_php = Off@' $php_install_dir/etc/php.ini
   sed -i 's@^request_order.*@request_order = "CGP"@' $php_install_dir/etc/php.ini
-  sed -i 's@^;date.timezone.*@date.timezone = Asia/Macao@' $php_install_dir/etc/php.ini
-  sed -i 's@^post_max_size.*@post_max_size = 64M@' $php_install_dir/etc/php.ini
-  sed -i 's@^upload_max_filesize.*@upload_max_filesize = 32M@' $php_install_dir/etc/php.ini
+  sed -i 's@^;date.timezone.*@date.timezone = Asia/Shanghai@' $php_install_dir/etc/php.ini
+  sed -i 's@^post_max_size.*@post_max_size = 100M@' $php_install_dir/etc/php.ini
+  sed -i 's@^upload_max_filesize.*@upload_max_filesize = 50M@' $php_install_dir/etc/php.ini
   sed -i 's@^max_execution_time.*@max_execution_time = 600@' $php_install_dir/etc/php.ini
   sed -i 's@^;realpath_cache_size.*@realpath_cache_size = 2M@' $php_install_dir/etc/php.ini
-  #sed -i 's@^disable_functions.*@disable_functions = passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,popen@' $php_install_dir/etc/php.ini
+  sed -i 's@^disable_functions.*@disable_functions = passthru,exec,system,chroot,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,popen@' $php_install_dir/etc/php.ini
   [ -e /usr/sbin/sendmail ] && sed -i 's@^;sendmail_path.*@sendmail_path = /usr/sbin/sendmail -t -i@' $php_install_dir/etc/php.ini
   
   [ "$PHP_cache" == '1' ] && cat > $php_install_dir/etc/php.d/ext-opcache.ini << EOF
@@ -241,6 +240,6 @@ EOF
     service httpd restart
   fi
   popd
-  [ -e "$php_install_dir/bin/phpize" ] && rm -rf php-$php70_version
+  [ -e "$php_install_dir/bin/phpize" ] && rm -rf php-$php71_version
   popd
 }
