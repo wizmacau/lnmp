@@ -464,6 +464,7 @@ case "${OS}" in
 esac
 
 # init
+startTime=`date +%s`
 . ./include/memory.sh
 case "${OS}" in
   "CentOS")
@@ -486,12 +487,20 @@ checkDownload 2>&1 | tee -a ${oneinstack_dir}/install.log
 # Install dependencies from source package
 installDepsBySrc 2>&1 | tee -a ${oneinstack_dir}/install.log
 
-# jemalloc
-if [[ $Nginx_version =~ ^[1-3]$ ]] || [ "$DB_yn" == 'y' -a "$DB_version" != '10' ]; then
-  if [ ! -e "/usr/local/lib/libjemalloc.so" ]; then
-    . include/jemalloc.sh
-    Install_Jemalloc | tee -a $oneinstack_dir/install.log
-  fi
+# Jemalloc
+if [[ $Nginx_version =~ ^[1-3]$ ]] || [ "$DB_yn" == 'y' ]; then
+  . include/jemalloc.sh
+  Install_Jemalloc | tee -a $oneinstack_dir/install.log
+fi
+
+# openSSL 
+. ./include/openssl.sh
+if [ "$Debian_version" == '8' -o "$Ubuntu_version" == '16' ] && [ "$PHP_version" == '1' ]; then
+  # Problem building php-5.3 with openssl
+  Install_openSSL100 | tee -a $oneinstack_dir/install.log
+fi
+if [[ $Tomcat_version =~ ^[1-3]$ ]] || [ "$DB_yn" == 'y' -a "$Apache_version" == '1' ]; then
+  Install_openSSL102 | tee -a $oneinstack_dir/install.log
 fi
 
 # Database
@@ -726,8 +735,10 @@ fi
 # Starting DB
 [ -d "/etc/mysql" ] && /bin/mv /etc/mysql{,_bk}
 [ -d "${db_install_dir}/support-files" -a -z "$(ps -ef | grep -v grep | grep mysql)" ] && /etc/init.d/mysqld start
-
+endTime=`date +%s`
+((installTime=($endTime-$startTime)/60))
 echo "####################Congratulations########################"
+echo "Total OneinStack Install Time: ${CQUESTION}${installTime}${CEND} minutes"
 [ "${Web_yn}" == 'y' -a "${Nginx_version}" != '4' -a "${Apache_version}" == '3' ] && echo -e "\n$(printf "%-32s" "Nginx install dir":)${CMSG}${web_install_dir}${CEND}"
 [ "${Web_yn}" == 'y' -a "${Nginx_version}" != '4' -a "${Apache_version}" != '3' ] && echo -e "\n$(printf "%-32s" "Nginx install dir":)${CMSG}${web_install_dir}${CEND}\n$(printf "%-32s" "Apache install  dir":)${CMSG}${apache_install_dir}${CEND}"
 [ "${Web_yn}" == 'y' -a "${Nginx_version}" == '4' -a "${Apache_version}" != '3' ] && echo -e "\n$(printf "%-32s" "Apache install dir":)${CMSG}${apache_install_dir}${CEND}"

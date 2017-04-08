@@ -110,7 +110,7 @@ checkDownload() {
             if [ "$(../include/check_port.py mirrors.tuna.tsinghua.edu.cn 443)" == "True" ]; then
               DOWN_ADDR_MYSQL=https://mirrors.tuna.tsinghua.edu.cn/mysql/downloads/MySQL-5.7
             else
-              DOWN_ADDR_MYSQL=http://mirrors.sohu.com/mysql/MySQL-5.7
+              DOWN_ADDR_MYSQL=http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/MySQL-5.7
               DOWN_ADDR_MYSQL_BK=${DOWN_ADDR_MYSQL}
             fi
           else
@@ -157,7 +157,7 @@ checkDownload() {
             if [ "$(../include/check_port.py mirrors.tuna.tsinghua.edu.cn 443)" == "True" ]; then
               DOWN_ADDR_MYSQL=https://mirrors.tuna.tsinghua.edu.cn/mysql/downloads/MySQL-5.6
             else
-              DOWN_ADDR_MYSQL=http://mirrors.sohu.com/mysql/MySQL-5.6
+              DOWN_ADDR_MYSQL=http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/MySQL-5.6
               DOWN_ADDR_MYSQL_BK=${DOWN_ADDR_MYSQL}
             fi
           else
@@ -202,7 +202,7 @@ checkDownload() {
             if [ "$(../include/check_port.py mirrors.tuna.tsinghua.edu.cn 443)" == "True" ]; then
               DOWN_ADDR_MYSQL=https://mirrors.tuna.tsinghua.edu.cn/mysql/downloads/MySQL-5.5
             else
-              DOWN_ADDR_MYSQL=http://mirrors.sohu.com/mysql/MySQL-5.5
+              DOWN_ADDR_MYSQL=http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/MySQL-5.5
               DOWN_ADDR_MYSQL_BK=${DOWN_ADDR_MYSQL}
             fi
           else
@@ -493,7 +493,7 @@ checkDownload() {
         src_url=${mirrorLink}/php5.3patch && Download_src
         # Use the special ssl for php5.3
         if [ "${Debian_version}" == '8' -o "${Ubuntu_version}" == "16" ]; then
-          if [ ! -e "/usr/local/openssl/lib/libcrypto.a" ]; then
+          if [ ! -e "/usr/local/openssl100s/lib/libcrypto.a" ]; then
             src_url=${mirrorLink}/openssl-1.0.0s.tar.gz && Download_src
             src_url=${mirrorLink}/curl-7.35.0.tar.gz && Download_src
           fi
@@ -647,7 +647,7 @@ checkDownload() {
 
   if [ "${FTP_yn}" == 'y' ]; then
     echo "Download pureftpd..."
-    src_url=http://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pureftpd_version}.tar.gz && Download_src
+    src_url=https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-${pureftpd_version}.tar.gz && Download_src
   fi
 
   if [ "${phpMyAdmin_yn}" == 'y' ]; then
@@ -679,13 +679,13 @@ checkDownload() {
       echo "Download pecl memcache for php 7.x..."
       # src_url=https://codeload.github.com/websupport-sk/pecl-memcache/zip/php7 && Download_src
       src_url=${mirrorLink}/pecl-memcache-php7.tgz && Download_src
-      echo "Download php-memcached for php 7.x..."
-      src_url=${mirrorLink}/php-memcached-php7.tgz && Download_src
+      echo "Download pecl memcached for php 7.x..."
+      src_url=https://pecl.php.net/get/memcached-${memcached_pecl_php7_version}.tgz && Download_src
     else
       echo "Download pecl memcache for php..."
       src_url=http://pecl.php.net/get/memcache-${memcache_pecl_version}.tgz && Download_src
-      echo "Download php-memcached for php..."
-    src_url=http://pecl.php.net/get/memcached-${memcached_pecl_version}.tgz && Download_src
+      echo "Download pecl memcached for php..."
+      src_url=http://pecl.php.net/get/memcached-${memcached_pecl_version}.tgz && Download_src
     fi
 
     echo "Download libmemcached..."
