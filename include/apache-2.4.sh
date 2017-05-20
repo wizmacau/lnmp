@@ -89,8 +89,8 @@ Install_Apache24() {
   #logrotate apache log
   cat > /etc/logrotate.d/apache << EOF
 $wwwlogs_dir/*apache.log {
-  daily
-  rotate 5
+  weekly
+  rotate 52
   missingok
   dateext
   compress
@@ -110,21 +110,21 @@ EOF
   ServerName 127.0.0.1 
   ErrorLog "$wwwlogs_dir/error_apache.log"
   CustomLog "$wwwlogs_dir/access_apache.log" common
-<Directory "$wwwroot_dir/default">
-  SetOutputFilter DEFLATE
-  Options FollowSymLinks ExecCGI
-  Require all granted
-  AllowOverride All
-  Order allow,deny
-  Allow from all
-  DirectoryIndex index.html index.php
-</Directory>
-<Location /server-status>
-  SetHandler server-status
-  Order Deny,Allow
-  Deny from all
-  Allow from 127.0.0.1
-</Location>
+  <Directory "$wwwroot_dir/default">
+    SetOutputFilter DEFLATE
+    Options FollowSymLinks ExecCGI
+    Require all granted
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    DirectoryIndex index.html index.php
+  </Directory>
+  <Location /server-status>
+    SetHandler server-status
+    Order Deny,Allow
+    Deny from all
+    Allow from 127.0.0.1
+  </Location>
 </VirtualHost>
 EOF
 
