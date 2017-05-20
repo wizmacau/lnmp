@@ -18,6 +18,9 @@ printf "
 #######################################################################
 "
 
+# Check if user is root
+[ $(id -u) != '0' ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
+
 # get pwd
 sed -i "s@^oneinstack_dir.*@oneinstack_dir=$(pwd)@" ./options.conf
 
@@ -46,9 +49,6 @@ sed -i "s@^oneinstack_dir.*@oneinstack_dir=$(pwd)@" ./options.conf
 . ./include/redis.sh
 
 . ./include/python.sh
-
-# Check if user is root
-[ $(id -u) != '0' ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 
 # Check PHP
 if [ -e "${php_install_dir}/bin/phpize" ]; then
@@ -128,6 +128,7 @@ Install_fail2ban() {
     LOGPATH=/var/log/secure
     /bin/cp files/redhat-initd /etc/init.d/fail2ban 
     sed -i "s@^FAIL2BAN=.*@FAIL2BAN=${python_install_dir}/bin/fail2ban-client@" /etc/init.d/fail2ban
+    sed -i 's@Starting fail2ban.*@&\n    [ ! -e "/var/run/fail2ban" ] \&\& mkdir /var/run/fail2ban@' /etc/init.d/fail2ban
     chmod +x /etc/init.d/fail2ban
     chkconfig --add fail2ban
     chkconfig fail2ban on
@@ -162,6 +163,7 @@ EOF
     endscript
 }
 EOF
+  sed -i 's@^iptables = iptables.*@iptables = iptables@' /etc/fail2ban/action.d/iptables-common.conf
   kill -9 `ps -ef | grep fail2ban | grep -v grep | awk '{print $2}'` > /dev/null 2>&1
   /etc/init.d/fail2ban start
   popd
