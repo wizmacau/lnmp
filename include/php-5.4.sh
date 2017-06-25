@@ -64,19 +64,19 @@ Install_PHP54() {
   pushd php-$php54_version
   make clean
   [ ! -d "$php_install_dir" ] && mkdir -p $php_install_dir
-  # if [[ $Apache_version =~ ^[1-2]$ ]] || [ -e "$apache_install_dir/bin/apxs" ]; then
-  #   ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
-  #   --with-config-file-scan-dir=$php_install_dir/etc/php.d \
-  #   --with-apxs2=$apache_install_dir/bin/apxs \
-  #   --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm \
-  #   --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
-  #   --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
-  #   --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
-  #   --enable-sysvsem --enable-inline-optimization --with-curl=/usr/local --enable-mbregex \
-  #   --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl \
-  #   --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-ftp --enable-intl --with-xsl \
-  #   --with-gettext --enable-zip --enable-soap --disable-debug $php_modules_options
-  # else
+  if [[ $Apache_version =~ ^[1-2]$ ]] || [ -e "$apache_install_dir/bin/apxs" ]; then
+    ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
+    --with-config-file-scan-dir=$php_install_dir/etc/php.d \
+    --with-apxs2=$apache_install_dir/bin/apxs \
+    --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm \
+    --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
+    --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
+    --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
+    --enable-sysvsem --enable-inline-optimization --with-curl=/usr/local --enable-mbregex \
+    --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl \
+    --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-ftp --enable-intl --with-xsl \
+    --with-gettext --enable-zip --enable-soap --disable-debug $php_modules_options
+  else
     ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
     --with-config-file-scan-dir=$php_install_dir/etc/php.d \
     --with-fpm-user=$run_user --with-fpm-group=$run_user --enable-fpm \
@@ -87,7 +87,7 @@ Install_PHP54() {
     --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl \
     --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-ftp --enable-intl --with-xsl \
     --with-gettext --enable-zip --enable-soap --disable-debug $php_modules_options
-  # fi
+  fi
   make ZEND_EXTRA_LIBS='-liconv' -j ${THREAD}
   make install
   

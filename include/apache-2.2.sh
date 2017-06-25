@@ -77,47 +77,25 @@ EOF
   cat > ${apache_install_dir}/conf/vhost/0.conf << EOF
 NameVirtualHost *:$TMP_PORT
 <VirtualHost *:$TMP_PORT>
-<<<<<<< HEAD
-    ServerAdmin it@wizmacau.com
-    DocumentRoot "$wwwroot_dir/default"
-    ServerName $TMP_IP
-    ErrorLog "$wwwlogs_dir/error_apache.log"
-    CustomLog "$wwwlogs_dir/access_apache.log" common
-    <Directory "$wwwroot_dir/default">
-        SetOutputFilter DEFLATE
-        Options FollowSymLinks ExecCGI
-        AllowOverride All
-        Order allow,deny
-        Allow from all
-        DirectoryIndex index.html index.php
-    </Directory>
-    <Location /server-status>
-        SetHandler server-status
-        Order Deny,Allow
-        Deny from all
-        Allow from 127.0.0.1
-    </Location>
-=======
-  ServerAdmin admin@linuxeye.com
+  ServerAdmin it@wizmacau.com
   DocumentRoot "$wwwroot_dir/default"
   ServerName 127.0.0.1
   ErrorLog "$wwwlogs_dir/error_apache.log"
   CustomLog "$wwwlogs_dir/access_apache.log" common
-<Directory "$wwwroot_dir/default">
-  SetOutputFilter DEFLATE
-  Options FollowSymLinks ExecCGI
-  AllowOverride All
-  Order allow,deny
-  Allow from all
-  DirectoryIndex index.html index.php
-</Directory>
-<Location /server-status>
-  SetHandler server-status
-  Order Deny,Allow
-  Deny from all
-  Allow from 127.0.0.1
-</Location>
->>>>>>> lnmp/master
+  <Directory "$wwwroot_dir/default">
+    SetOutputFilter DEFLATE
+    Options FollowSymLinks ExecCGI
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    DirectoryIndex index.html index.php
+  </Directory>
+  <Location /server-status>
+    SetHandler server-status
+    Order Deny,Allow
+    Deny from all
+    Allow from 127.0.0.1
+  </Location>
 </VirtualHost>
 EOF
 
