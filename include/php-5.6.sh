@@ -21,7 +21,7 @@ Install_PHP56() {
   
   tar xzf curl-$curl_version.tar.gz
   pushd curl-$curl_version
-  ./configure --prefix=/usr/local
+  ./configure --prefix=/usr/local --with-ssl=${openssl_install_dir}
   make -j ${THREAD} && make install
   popd
   rm -rf curl-$curl_version
@@ -64,6 +64,7 @@ Install_PHP56() {
   make clean
   [ ! -d "$php_install_dir" ] && mkdir -p $php_install_dir
   [ "$PHP_cache" == '1' ] && PHP_cache_tmp='--enable-opcache' || PHP_cache_tmp='--disable-opcache'
+
   # if [[ $Apache_version =~ ^[1-2]$ ]] || [ -e "$apache_install_dir/bin/apxs" ]; then
   #   ./configure --prefix=$php_install_dir --with-config-file-path=$php_install_dir/etc \
   #   --with-config-file-scan-dir=$php_install_dir/etc/php.d \
@@ -83,7 +84,7 @@ Install_PHP56() {
     --with-iconv-dir=/usr/local --with-freetype-dir --with-jpeg-dir --with-png-dir --with-zlib \
     --with-libxml-dir=/usr --enable-xml --disable-rpath --enable-bcmath --enable-shmop --enable-exif \
     --enable-sysvsem --enable-inline-optimization --with-curl=/usr/local --enable-mbregex \
-    --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl \
+    --enable-mbstring --with-mcrypt --with-gd --enable-gd-native-ttf --with-openssl=${openssl_install_dir} \
     --with-mhash --enable-pcntl --enable-sockets --with-xmlrpc --enable-ftp --enable-intl --with-xsl \
     --with-gettext --enable-zip --enable-soap --disable-debug $php_modules_options
   # fi
